@@ -113,13 +113,14 @@ namespace Inventory_Management
             // 
             // button4
             // 
-            button4.BackColor = SystemColors.ControlDarkDark;
+            button4.BackColor = SystemColors.Control;
             button4.Location = new Point(7, 131);
             button4.Name = "button4";
             button4.Size = new Size(125, 29);
             button4.TabIndex = 4;
-            button4.Text = "Create Item";
-            button4.UseVisualStyleBackColor = false;
+            button4.Text = "Add Items";
+            button4.UseVisualStyleBackColor = true;
+            button4.Click += button4_Click;
             // 
             // button3
             // 

@@ -1,6 +1,6 @@
-﻿namespace Inventory_Management
+namespace Inventory_Management
 {
-    partial class Form1
+    partial class Form3
     {
         /// <summary>
         ///  Required designer variable.
@@ -92,13 +92,13 @@
             // 
             // button4
             // 
-            button4.BackColor = SystemColors.Control;
+            button4.BackColor = SystemColors.ActiveCaption;
             button4.Location = new Point(7, 131);
             button4.Name = "button4";
             button4.Size = new Size(125, 29);
             button4.TabIndex = 4;
             button4.Text = "Add Items";
-            button4.UseVisualStyleBackColor = true;
+            button4.UseVisualStyleBackColor = false;
             button4.Click += button4_Click;
             // 
             // button3
@@ -173,7 +173,7 @@
             label4.TabIndex = 4;
             label4.Text = "Suggested Actions Would Go Here";
             // 
-            // Form1
+            // Form3
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -183,8 +183,8 @@
             Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(groupBox1);
-            Name = "Form1";
-            Text = "Form1";
+            Name = "Form3";
+            Text = "Add Items";
             groupBox1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
@@ -206,3 +206,5 @@
         private Label label4;
     }
 }
+
+

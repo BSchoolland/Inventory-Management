@@ -5,11 +5,13 @@ namespace Inventory_Management
     public partial class Form1 : Form
     {
         private Form2 form2;
+        private Form3 form3;
 
         public Form1()
         {
             InitializeComponent();
             form2 = new Form2(this);
+            form3 = new Form3(this, form2);
             this.FormClosed += (s, e) => Application.Exit();
         }
 
@@ -39,6 +41,12 @@ namespace Inventory_Management
         private void button3_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            form3.Show();
+            this.Hide();
         }
     }
 }

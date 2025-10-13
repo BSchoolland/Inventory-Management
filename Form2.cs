@@ -8,6 +8,7 @@ namespace Inventory_Management
     public partial class Form2 : Form
     {
         private Form1 form1;
+        private Form3 form3;
         private List<InventoryItem> inventoryItems = new();
         private int currentPage = 0;
         private int itemsPerPage = 5;
@@ -19,6 +20,7 @@ namespace Inventory_Management
             form1 = parentForm;
             InitializeComponent();
             this.FormClosed += (s, e) => Application.Exit();
+            form3 = new Form3(form1, this);
             LoadInventory();
             ClearFilters();
             ApplyFilters();
@@ -27,7 +29,7 @@ namespace Inventory_Management
 
         private void LoadInventory()
         {
-            string jsonData = @"[ { ""items"": [ { ""name"": ""Great Value Whole Milk"", ""description"": ""1 gallon jug, 2% reduced fat milk"", ""current_price"": 3.28, ""stock_quantity"": 120, ""barcode"": ""078742054355"" }, { ""name"": ""Wonder Classic White Bread"", ""description"": ""20 oz loaf of sliced white bread"", ""current_price"": 2.48, ""stock_quantity"": 80, ""barcode"": ""072250010002"" }, { ""name"": ""Lay's Classic Potato Chips"", ""description"": ""8 oz party size bag of potato chips"", ""current_price"": 4.29, ""stock_quantity"": 60, ""barcode"": ""028400044709"" }, { ""name"": ""Great Value Large Eggs"", ""description"": ""12 count carton of Grade A large eggs"", ""current_price"": 2.29, ""stock_quantity"": 150, ""barcode"": ""078742059732"" }, { ""name"": ""Coca-Cola 12 Pack"", ""description"": ""12 fl oz cans, 12 count"", ""current_price"": 6.98, ""stock_quantity"": 90, ""barcode"": ""049000050103"" }, { ""name"": ""Bounty Paper Towels"", ""description"": ""6 double rolls, white, select-a-size"", ""current_price"": 12.97, ""stock_quantity"": 45, ""barcode"": ""037000748194"" }, { ""name"": ""Charmin Ultra Soft Toilet Paper"", ""description"": ""12 mega rolls, 2-ply"", ""current_price"": 14.97, ""stock_quantity"": 50, ""barcode"": ""030772064092"" }, { ""name"": ""Hanes Men’s T-Shirt 5-Pack"", ""description"": ""Crew neck, size L, assorted colors"", ""current_price"": 17.84, ""stock_quantity"": 35, ""barcode"": ""038257587281"" }, { ""name"": ""George Men’s Jeans"", ""description"": ""Straight fit, dark wash, size 34x32"", ""current_price"": 19.97, ""stock_quantity"": 40, ""barcode"": ""887778123441"" }, { ""name"": ""Mainstays Bath Towel"", ""description"": ""100% cotton, 27 in x 52 in, navy blue"", ""current_price"": 4.88, ""stock_quantity"": 70, ""barcode"": ""787139693250"" }, { ""name"": ""Ozark Trail Stainless Steel Tumbler"", ""description"": ""30 oz insulated tumbler with lid, silver"", ""current_price"": 9.94, ""stock_quantity"": 55, ""barcode"": ""810055480239"" }, { ""name"": ""Samsung 32-inch Smart TV"", ""description"": ""HD 720p with built-in apps"", ""current_price"": 158.00, ""stock_quantity"": 12, ""barcode"": ""887276567321"" }, { ""name"": ""Duracell AA Batteries"", ""description"": ""16 pack of alkaline AA batteries"", ""current_price"": 14.24, ""stock_quantity"": 65, ""barcode"": ""041333150014"" }, { ""name"": ""Crayola Crayons 24 Count"", ""description"": ""Classic color crayons for kids"", ""current_price"": 1.47, ""stock_quantity"": 200, ""barcode"": ""071662000249"" }, { ""name"": ""LEGO Classic Medium Brick Box"", ""description"": ""484-piece building set, ages 4+"", ""current_price"": 34.76, ""stock_quantity"": 25, ""barcode"": ""673419232904"" } ] } ]";
+            string jsonData = @"[ { ""items"": [ { ""name"": ""Great Value Whole Milk"", ""description"": ""1 gallon jug, 2% reduced fat milk"", ""current_price"": 3.28, ""stock_quantity"": 120, ""barcode"": ""078742054355"" }, { ""name"": ""Wonder Classic White Bread"", ""description"": ""20 oz loaf of sliced white bread"", ""current_price"": 2.48, ""stock_quantity"": 80, ""barcode"": ""072250010002"" }, { ""name"": ""Lay's Classic Potato Chips"", ""description"": ""8 oz party size bag of potato chips"", ""current_price"": 4.29, ""stock_quantity"": 60, ""barcode"": ""028400044709"" }, { ""name"": ""Great Value Large Eggs"", ""description"": ""12 count carton of Grade A large eggs"", ""current_price"": 2.29, ""stock_quantity"": 150, ""barcode"": ""078742059732"" }, { ""name"": ""Coca-Cola 12 Pack"", ""description"": ""12 fl oz cans, 12 count"", ""current_price"": 6.98, ""stock_quantity"": 90, ""barcode"": ""049000050103"" }, { ""name"": ""Bounty Paper Towels"", ""description"": ""6 double rolls, white, select-a-size"", ""current_price"": 12.97, ""stock_quantity"": 45, ""barcode"": ""037000748194"" }, { ""name"": ""Charmin Ultra Soft Toilet Paper"", ""description"": ""12 mega rolls, 2-ply"", ""current_price"": 14.97, ""stock_quantity"": 50, ""barcode"": ""030772064092"" }, { ""name"": ""Hanes Menï¿½s T-Shirt 5-Pack"", ""description"": ""Crew neck, size L, assorted colors"", ""current_price"": 17.84, ""stock_quantity"": 35, ""barcode"": ""038257587281"" }, { ""name"": ""George Menï¿½s Jeans"", ""description"": ""Straight fit, dark wash, size 34x32"", ""current_price"": 19.97, ""stock_quantity"": 40, ""barcode"": ""887778123441"" }, { ""name"": ""Mainstays Bath Towel"", ""description"": ""100% cotton, 27 in x 52 in, navy blue"", ""current_price"": 4.88, ""stock_quantity"": 70, ""barcode"": ""787139693250"" }, { ""name"": ""Ozark Trail Stainless Steel Tumbler"", ""description"": ""30 oz insulated tumbler with lid, silver"", ""current_price"": 9.94, ""stock_quantity"": 55, ""barcode"": ""810055480239"" }, { ""name"": ""Samsung 32-inch Smart TV"", ""description"": ""HD 720p with built-in apps"", ""current_price"": 158.00, ""stock_quantity"": 12, ""barcode"": ""887276567321"" }, { ""name"": ""Duracell AA Batteries"", ""description"": ""16 pack of alkaline AA batteries"", ""current_price"": 14.24, ""stock_quantity"": 65, ""barcode"": ""041333150014"" }, { ""name"": ""Crayola Crayons 24 Count"", ""description"": ""Classic color crayons for kids"", ""current_price"": 1.47, ""stock_quantity"": 200, ""barcode"": ""071662000249"" }, { ""name"": ""LEGO Classic Medium Brick Box"", ""description"": ""484-piece building set, ages 4+"", ""current_price"": 34.76, ""stock_quantity"": 25, ""barcode"": ""673419232904"" } ] } ]";
             var doc = JsonDocument.Parse(jsonData);
             var items = doc.RootElement[0].GetProperty("items");
             foreach (var item in items.EnumerateArray())
@@ -181,6 +183,11 @@ namespace Inventory_Management
         private void button1_Click(object sender, EventArgs e) { }
         private void button2_Click(object sender, EventArgs e) { }
         private void button3_Click(object sender, EventArgs e) { }
+        private void button4_Click(object sender, EventArgs e)
+        {
+            form3.Show();
+            this.Hide();
+        }
         private void button1_Click_1(object sender, EventArgs e)
         {
             form1.Show();
