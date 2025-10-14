@@ -28,112 +28,10 @@ namespace Inventory_Management
         /// </summary>
         private void InitializeComponent()
         {
-            groupBox1 = new GroupBox();
-            button7 = new Button();
-            button6 = new Button();
-            button5 = new Button();
-            button4 = new Button();
-            button3 = new Button();
-            InventoryNavButton = new Button();
-            OverviewNavButton = new Button();
             label1 = new Label();
             uploadButton = new Button();
             label2 = new Label();
-            groupBox1.SuspendLayout();
             SuspendLayout();
-            // 
-            // groupBox1
-            // 
-            groupBox1.Controls.Add(button7);
-            groupBox1.Controls.Add(button6);
-            groupBox1.Controls.Add(button5);
-            groupBox1.Controls.Add(button4);
-            groupBox1.Controls.Add(button3);
-            groupBox1.Controls.Add(InventoryNavButton);
-            groupBox1.Controls.Add(OverviewNavButton);
-            groupBox1.Location = new Point(0, 0);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(139, 452);
-            groupBox1.TabIndex = 0;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Navigation";
-            groupBox1.Enter += groupBox1_Enter;
-            // 
-            // button7
-            // 
-            button7.BackColor = SystemColors.ControlDarkDark;
-            button7.Location = new Point(7, 236);
-            button7.Name = "button7";
-            button7.Size = new Size(125, 29);
-            button7.TabIndex = 7;
-            button7.Text = "Checkout";
-            button7.UseVisualStyleBackColor = false;
-            // 
-            // button6
-            // 
-            button6.BackColor = SystemColors.ControlDarkDark;
-            button6.Location = new Point(7, 201);
-            button6.Name = "button6";
-            button6.Size = new Size(125, 29);
-            button6.TabIndex = 6;
-            button6.Text = "Projections";
-            button6.UseVisualStyleBackColor = false;
-            // 
-            // button5
-            // 
-            button5.BackColor = SystemColors.ControlDarkDark;
-            button5.Location = new Point(7, 166);
-            button5.Name = "button5";
-            button5.Size = new Size(125, 29);
-            button5.TabIndex = 5;
-            button5.Text = "Edit Item";
-            button5.UseVisualStyleBackColor = false;
-            // 
-            // button4
-            // 
-            button4.BackColor = SystemColors.ActiveCaption;
-            button4.Location = new Point(7, 131);
-            button4.Name = "button4";
-            button4.Size = new Size(125, 29);
-            button4.TabIndex = 4;
-            button4.Text = "Manage Items";
-            button4.UseVisualStyleBackColor = false;
-            button4.Click += button4_Click;
-            // 
-            // button3
-            // 
-            button3.BackColor = SystemColors.ControlDarkDark;
-            button3.Location = new Point(7, 96);
-            button3.Name = "button3";
-            button3.RightToLeft = RightToLeft.Yes;
-            button3.Size = new Size(125, 29);
-            button3.TabIndex = 3;
-            button3.Text = "Add Stock";
-            button3.UseVisualStyleBackColor = false;
-            button3.Click += button3_Click;
-            // 
-            // InventoryNavButton
-            // 
-            InventoryNavButton.Location = new Point(7, 61);
-            InventoryNavButton.Name = "InventoryNavButton";
-            InventoryNavButton.Size = new Size(125, 29);
-            InventoryNavButton.TabIndex = 2;
-            InventoryNavButton.Text = "View Inventory";
-            InventoryNavButton.UseVisualStyleBackColor = true;
-            InventoryNavButton.Click += button2_Click;
-            // 
-            // OverviewNavButton
-            // 
-            OverviewNavButton.BackColor = SystemColors.ActiveCaption;
-            OverviewNavButton.FlatStyle = FlatStyle.Popup;
-            OverviewNavButton.ForeColor = SystemColors.ActiveCaptionText;
-            OverviewNavButton.Location = new Point(7, 26);
-            OverviewNavButton.Name = "OverviewNavButton";
-            OverviewNavButton.Size = new Size(125, 29);
-            OverviewNavButton.TabIndex = 1;
-            OverviewNavButton.Text = "Overview";
-            OverviewNavButton.UseVisualStyleBackColor = false;
-            OverviewNavButton.Click += button1_Click;
             // 
             // label1
             // 
@@ -172,24 +70,13 @@ namespace Inventory_Management
             Controls.Add(label2);
             Controls.Add(uploadButton);
             Controls.Add(label1);
-            Controls.Add(groupBox1);
             Name = "Form3";
             Text = "Add Items";
-            groupBox1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
-
-        private GroupBox groupBox1;
-        private Button InventoryNavButton;
-        private Button OverviewNavButton;
-        private Button button7;
-        private Button button6;
-        private Button button5;
-        private Button button4;
-        private Button button3;
         private Label label1;
         private Button uploadButton;
         private Label label2;

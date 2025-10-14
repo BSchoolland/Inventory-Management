@@ -6,6 +6,7 @@ namespace Inventory_Management
     {
         private Form2 form2;
         private Form3 form3;
+        private NavigationControl nav;
 
         public Form1()
         {
@@ -13,6 +14,18 @@ namespace Inventory_Management
             form2 = new Form2(this);
             form3 = new Form3(this, form2);
             this.FormClosed += (s, e) => Application.Exit();
+
+            nav = new NavigationControl();
+            nav.Location = new Point(0, 0);
+            Controls.Add(nav);
+            if (groupBox1 != null) groupBox1.Visible = false;
+
+            nav.OverviewClicked += (s, e) => button1_Click(s, e);
+            nav.ViewInventoryClicked += (s, e) => button2_Click(s, e);
+            nav.ManageItemsClicked += (s, e) => button4_Click(s, e);
+            nav.AddStockClicked += (s, e) => SystemSounds.Beep.Play();
+            nav.ProjectionsClicked += (s, e) => SystemSounds.Beep.Play();
+            nav.CheckoutClicked += (s, e) => SystemSounds.Beep.Play();
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)

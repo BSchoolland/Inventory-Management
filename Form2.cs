@@ -22,6 +22,17 @@ namespace Inventory_Management
             InitializeComponent();
             this.FormClosed += (s, e) => Application.Exit();
             form3 = new Form3(form1, this);
+            var nav = new NavigationControl();
+            nav.Location = new Point(0, 0);
+            Controls.Add(nav);
+            if (groupBox1 != null) groupBox1.Visible = false;
+
+            nav.OverviewClicked += (s, e) => { form1.Show(); this.Hide(); };
+            nav.ViewInventoryClicked += (s, e) => { SystemSounds.Hand.Play(); };
+            nav.ManageItemsClicked += (s, e) => { form3.Show(); this.Hide(); };
+            nav.AddStockClicked += (s, e) => SystemSounds.Beep.Play();
+            nav.ProjectionsClicked += (s, e) => SystemSounds.Beep.Play();
+            nav.CheckoutClicked += (s, e) => SystemSounds.Beep.Play();
             LoadInventory();
             ClearFilters();
             ApplyFilters();
