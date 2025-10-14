@@ -6,6 +6,7 @@ namespace Inventory_Management
     {
         private Form2 form2;
         private Form3 form3;
+        private Form4 form4;
         private NavigationControl nav;
 
         public Form1()
@@ -13,6 +14,7 @@ namespace Inventory_Management
             InitializeComponent();
             form2 = new Form2(this);
             form3 = new Form3(this, form2);
+            form4 = new Form4(this, form2, form3);
             this.FormClosed += (s, e) => Application.Exit();
 
             nav = new NavigationControl();
@@ -23,7 +25,7 @@ namespace Inventory_Management
             nav.OverviewClicked += (s, e) => button1_Click(s, e);
             nav.ViewInventoryClicked += (s, e) => button2_Click(s, e);
             nav.ManageItemsClicked += (s, e) => button4_Click(s, e);
-            nav.AddStockClicked += (s, e) => SystemSounds.Beep.Play();
+            nav.AddStockClicked += (s, e) => { form4.Show(); this.Hide(); };
             nav.ProjectionsClicked += (s, e) => SystemSounds.Beep.Play();
             nav.CheckoutClicked += (s, e) => SystemSounds.Beep.Play();
         }

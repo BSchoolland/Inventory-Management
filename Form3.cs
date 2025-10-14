@@ -1,7 +1,5 @@
 using System.Media;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Inventory_Management
 {
@@ -11,6 +9,7 @@ namespace Inventory_Management
         private Form2 form2;
         private NavigationControl nav;
 		private List<string> cachedItemNames = new();
+        private Form4 form4;
 
         public Form3(Form1 parent1, Form2 parent2)
         {
@@ -22,12 +21,13 @@ namespace Inventory_Management
             nav = new NavigationControl();
             nav.Location = new Point(0, 0);
             Controls.Add(nav);
+            form4 = new Form4(form1, form2, this);
 
 
             nav.OverviewClicked += (s, e) => button1_Click(s, e);
             nav.ViewInventoryClicked += (s, e) => button2_Click(s, e);
             nav.ManageItemsClicked += (s, e) => button4_Click(s, e);
-            nav.AddStockClicked += (s, e) => SystemSounds.Beep.Play();
+            nav.AddStockClicked += (s, e) => { form4.Show(); this.Hide(); };
             nav.ProjectionsClicked += (s, e) => SystemSounds.Beep.Play();
             nav.CheckoutClicked += (s, e) => SystemSounds.Beep.Play();
         }
@@ -73,15 +73,8 @@ namespace Inventory_Management
                     return;
                 }
 
-                var dataPath = GetDataFilePath();
-                EnsureDataFile();
-
-                var rootList = LoadStorage();
-                if (rootList.Count == 0)
-                {
-                    rootList.Add(new StorageRoot { Items = new List<StorageItem>() });
-                }
-                var storage = rootList[0];
+                InventoryStorage.EnsureDataFile();
+                var items = InventoryStorage.LoadItems();
 
                 int added = 0, updated = 0, skipped = 0, errors = 0;
                 var bulkChoice = UpdateDecision.AskEach;
@@ -99,7 +92,7 @@ namespace Inventory_Management
                     if (!decimal.TryParse(parts[1].Trim(), out var price)) { errors++; continue; }
                     if (!int.TryParse(parts[2].Trim(), out var qty)) { errors++; continue; }
 
-                    var existing = storage.Items.FirstOrDefault(i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase));
+                    var existing = items.FirstOrDefault(i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase));
                     if (existing != null)
                     {
                         UpdateDecision decision = bulkChoice;
@@ -125,7 +118,7 @@ namespace Inventory_Management
                     }
                     else
                     {
-                        storage.Items.Add(new StorageItem
+                        items.Add(new InventoryItem
                         {
                             Name = name,
                             Description = string.Empty,
@@ -137,7 +130,7 @@ namespace Inventory_Management
                     }
                 }
 
-				SaveStorage(rootList);
+				InventoryStorage.SaveItems(items);
 				MessageBox.Show($"Added: {added}\nUpdated: {updated}\nSkipped: {skipped}\nErrors: {errors}", "Upload Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				RefreshItemNames();
 				UpdateDeleteUIState();
@@ -148,51 +141,7 @@ namespace Inventory_Management
             }
         }
 
-        private static string GetDataFilePath()
-        {
-            string dir = Path.Combine(AppContext.BaseDirectory, "data");
-            return Path.Combine(dir, "items.json");
-        }
-
-        private static void EnsureDataFile()
-        {
-            string dir = Path.Combine(AppContext.BaseDirectory, "data");
-            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-            string path = Path.Combine(dir, "items.json");
-            if (!File.Exists(path))
-            {
-                File.WriteAllText(path, "[ { \"items\": [] } ]");
-            }
-        }
-
-        private static List<StorageRoot> LoadStorage()
-        {
-            string path = GetDataFilePath();
-            var json = File.ReadAllText(path);
-            var list = JsonSerializer.Deserialize<List<StorageRoot>>(json) ?? new List<StorageRoot>();
-            return list;
-        }
-
-        private static void SaveStorage(List<StorageRoot> roots)
-        {
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            var json = JsonSerializer.Serialize(roots, options);
-            File.WriteAllText(GetDataFilePath(), json);
-        }
-
-        private class StorageRoot
-        {
-            [JsonPropertyName("items")] public List<StorageItem> Items { get; set; } = new();
-        }
-
-        private class StorageItem
-        {
-            [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
-            [JsonPropertyName("description")] public string Description { get; set; } = string.Empty;
-            [JsonPropertyName("current_price")] public decimal CurrentPrice { get; set; }
-            [JsonPropertyName("stock_quantity")] public int StockQuantity { get; set; }
-            [JsonPropertyName("barcode")] public string Barcode { get; set; } = string.Empty;
-        }
+        
 
         private void label2_Click_1(object sender, EventArgs e)
         {
@@ -203,13 +152,7 @@ namespace Inventory_Management
         {
             try
             {
-                var roots = LoadStorage();
-                if (roots.Count == 0)
-                {
-                    MessageBox.Show("No storage found.");
-                    return;
-                }
-                var storage = roots[0];
+                var items = InventoryStorage.LoadItems();
                 var name = deleteNameTextBox.Text.Trim();
                 if (string.IsNullOrWhiteSpace(name))
                 {
@@ -217,10 +160,10 @@ namespace Inventory_Management
                     return;
                 }
 
-                var removed = storage.Items.RemoveAll(i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase));
+                var removed = items.RemoveAll(i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase));
                 if (removed > 0)
                 {
-                    SaveStorage(roots);
+                    InventoryStorage.SaveItems(items);
                     MessageBox.Show($"Deleted {removed} item(s) named '{name}'.");
 					RefreshItemNames();
 					UpdateDeleteUIState();
@@ -240,20 +183,15 @@ namespace Inventory_Management
         {
             try
             {
-                EnsureDataFile();
-                var roots = LoadStorage();
-                if (roots.Count == 0)
-                {
-                    roots.Add(new StorageRoot { Items = new List<StorageItem>() });
-                }
-                var storage = roots[0];
+                InventoryStorage.EnsureDataFile();
+                var items = InventoryStorage.LoadItems();
 
                 string name = nameTextBox.Text.Trim();
                 if (string.IsNullOrWhiteSpace(name)) { MessageBox.Show("Name is required."); return; }
                 if (!decimal.TryParse(priceTextBox.Text.Trim(), out var price)) { MessageBox.Show("Invalid price."); return; }
                 if (!int.TryParse(qtyTextBox.Text.Trim(), out var qty)) { MessageBox.Show("Invalid quantity."); return; }
 
-                var existing = storage.Items.FirstOrDefault(i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase));
+                var existing = items.FirstOrDefault(i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase));
                 if (existing != null)
                 {
                     var resp = MessageBox.Show($"'{name}' exists. Update price/quantity?", "Confirm Update", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -270,7 +208,7 @@ namespace Inventory_Management
                 }
                 else
                 {
-                    storage.Items.Add(new StorageItem
+                    items.Add(new InventoryItem
                     {
                         Name = name,
                         Description = string.Empty,
@@ -280,7 +218,7 @@ namespace Inventory_Management
                     });
                 }
 
-				SaveStorage(roots);
+				InventoryStorage.SaveItems(items);
 				MessageBox.Show("Item saved.");
 				RefreshItemNames();
 				UpdateDeleteUIState();
@@ -331,8 +269,7 @@ namespace Inventory_Management
         {
             try
             {
-                var roots = LoadStorage();
-                var list = roots.Count > 0 ? roots[0].Items.Select(i => i.Name).Where(n => !string.IsNullOrWhiteSpace(n)).ToList() : new List<string>();
+                var list = InventoryStorage.LoadItems().Select(i => i.Name).Where(n => !string.IsNullOrWhiteSpace(n)).ToList();
                 cachedItemNames = list;
             }
             catch

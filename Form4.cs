@@ -6,33 +6,33 @@ using System.IO;
 
 namespace Inventory_Management
 {
-    public partial class Form2 : Form
+    public partial class Form4 : Form
     {
         private Form1 form1;
+        private Form2 form2;
         private Form3 form3;
-        private Form4 form4;
         private List<InventoryItem> inventoryItems = new();
         private int currentPage = 0;
         private int itemsPerPage = 5;
         private int totalPages = 0;
         private List<InventoryItem> filteredItems = new();
 
-        public Form2(Form1 parentForm)
+        public Form4(Form1 parent1, Form2 parent2, Form3 parent3)
         {
-            form1 = parentForm;
+            form1 = parent1;
+            form2 = parent2;
+            form3 = parent3;
             InitializeComponent();
             this.FormClosed += (s, e) => Application.Exit();
-            form3 = new Form3(form1, this);
-            form4 = new Form4(form1, this, form3);
             var nav = new NavigationControl();
             nav.Location = new Point(0, 0);
             Controls.Add(nav);
             
 
             nav.OverviewClicked += (s, e) => { form1.Show(); this.Hide(); };
-            nav.ViewInventoryClicked += (s, e) => { SystemSounds.Hand.Play(); };
+            nav.ViewInventoryClicked += (s, e) => { form2.Show(); this.Hide(); };
             nav.ManageItemsClicked += (s, e) => { form3.Show(); this.Hide(); };
-            nav.AddStockClicked += (s, e) => { form4.Show(); this.Hide(); };
+            nav.AddStockClicked += (s, e) => { SystemSounds.Hand.Play(); };
             nav.ProjectionsClicked += (s, e) => SystemSounds.Beep.Play();
             nav.CheckoutClicked += (s, e) => SystemSounds.Beep.Play();
             inventoryItems = InventoryStorage.LoadItems();
@@ -74,7 +74,12 @@ namespace Inventory_Management
                 it => it.CurrentPrice,
                 it => it.StockQuantity,
                 it => it.Barcode,
-                null);
+                (it, addQty) =>
+                {
+                    if (addQty <= 0) return;
+                    TryAddStock(it.Name, addQty);
+                    RefreshFromStorage();
+                });
             buttonBackward.Enabled = currentPage > 0;
             buttonForward.Enabled = currentPage < totalPages - 1;
         }
@@ -144,7 +149,7 @@ namespace Inventory_Management
             this.Hide();
         }
 
-        private void Form2_Load(object sender, EventArgs e)
+        private void Form4_Load(object sender, EventArgs e)
         {
 
         }
@@ -164,6 +169,18 @@ namespace Inventory_Management
                 currentPage = 0;
                 ApplyFilters();
                 displayInventory();
+            }
+            catch { }
+        }
+        private void TryAddStock(string name, int add)
+        {
+            try
+            {
+                var items = InventoryStorage.LoadItems();
+                var target = items.FirstOrDefault(i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase));
+                if (target == null) return;
+                target.StockQuantity += add;
+                InventoryStorage.SaveItems(items);
             }
             catch { }
         }

@@ -24,120 +24,120 @@ namespace Inventory_Management
 
         private void InitializeComponent()
         {
-            this.groupBox = new GroupBox();
-            this.checkoutButton = new Button();
-            this.projectionsButton = new Button();
-            this.editItemButton = new Button();
-            this.manageItemsButton = new Button();
-            this.addStockButton = new Button();
-            this.viewInventoryButton = new Button();
-            this.overviewButton = new Button();
-            this.groupBox.SuspendLayout();
-            this.SuspendLayout();
+            groupBox = new GroupBox();
+            checkoutButton = new Button();
+            projectionsButton = new Button();
+            editItemButton = new Button();
+            manageItemsButton = new Button();
+            addStockButton = new Button();
+            viewInventoryButton = new Button();
+            overviewButton = new Button();
+            groupBox.SuspendLayout();
+            SuspendLayout();
             // 
             // groupBox
             // 
-            this.groupBox.Controls.Add(this.checkoutButton);
-            this.groupBox.Controls.Add(this.projectionsButton);
-            this.groupBox.Controls.Add(this.editItemButton);
-            this.groupBox.Controls.Add(this.manageItemsButton);
-            this.groupBox.Controls.Add(this.addStockButton);
-            this.groupBox.Controls.Add(this.viewInventoryButton);
-            this.groupBox.Controls.Add(this.overviewButton);
-            this.groupBox.Location = new Point(0, 0);
-            this.groupBox.Name = "groupBox";
-            this.groupBox.Size = new Size(139, 452);
-            this.groupBox.TabIndex = 0;
-            this.groupBox.TabStop = false;
-            this.groupBox.Text = "Navigation";
+            groupBox.Controls.Add(checkoutButton);
+            groupBox.Controls.Add(projectionsButton);
+            groupBox.Controls.Add(editItemButton);
+            groupBox.Controls.Add(manageItemsButton);
+            groupBox.Controls.Add(addStockButton);
+            groupBox.Controls.Add(viewInventoryButton);
+            groupBox.Controls.Add(overviewButton);
+            groupBox.Location = new Point(0, 0);
+            groupBox.Name = "groupBox";
+            groupBox.Size = new Size(139, 452);
+            groupBox.TabIndex = 0;
+            groupBox.TabStop = false;
+            groupBox.Text = "Navigation";
             // 
             // checkoutButton
             // 
-            this.checkoutButton.BackColor = SystemColors.ControlDarkDark;
-            this.checkoutButton.Location = new Point(7, 236);
-            this.checkoutButton.Name = "checkoutButton";
-            this.checkoutButton.Size = new Size(125, 29);
-            this.checkoutButton.TabIndex = 7;
-            this.checkoutButton.Text = "Checkout";
-            this.checkoutButton.UseVisualStyleBackColor = false;
-            this.checkoutButton.Click += checkoutButton_Click;
+            checkoutButton.BackColor = SystemColors.ControlDarkDark;
+            checkoutButton.Location = new Point(7, 236);
+            checkoutButton.Name = "checkoutButton";
+            checkoutButton.Size = new Size(125, 29);
+            checkoutButton.TabIndex = 7;
+            checkoutButton.Text = "Checkout";
+            checkoutButton.UseVisualStyleBackColor = false;
+            checkoutButton.Click += checkoutButton_Click;
             // 
             // projectionsButton
             // 
-            this.projectionsButton.BackColor = SystemColors.ControlDarkDark;
-            this.projectionsButton.Location = new Point(7, 201);
-            this.projectionsButton.Name = "projectionsButton";
-            this.projectionsButton.Size = new Size(125, 29);
-            this.projectionsButton.TabIndex = 6;
-            this.projectionsButton.Text = "Projections";
-            this.projectionsButton.UseVisualStyleBackColor = false;
-            this.projectionsButton.Click += projectionsButton_Click;
+            projectionsButton.BackColor = SystemColors.ControlDarkDark;
+            projectionsButton.Location = new Point(7, 201);
+            projectionsButton.Name = "projectionsButton";
+            projectionsButton.Size = new Size(125, 29);
+            projectionsButton.TabIndex = 6;
+            projectionsButton.Text = "Projections";
+            projectionsButton.UseVisualStyleBackColor = false;
+            projectionsButton.Click += projectionsButton_Click;
             // 
             // editItemButton
             // 
-            this.editItemButton.BackColor = SystemColors.ControlDarkDark;
-            this.editItemButton.Location = new Point(7, 166);
-            this.editItemButton.Name = "editItemButton";
-            this.editItemButton.Size = new Size(125, 29);
-            this.editItemButton.TabIndex = 5;
-            this.editItemButton.Text = "Edit Item";
-            this.editItemButton.UseVisualStyleBackColor = false;
+            editItemButton.BackColor = SystemColors.ControlDarkDark;
+            editItemButton.Location = new Point(7, 166);
+            editItemButton.Name = "editItemButton";
+            editItemButton.Size = new Size(125, 29);
+            editItemButton.TabIndex = 5;
+            editItemButton.Text = "Edit Item";
+            editItemButton.UseVisualStyleBackColor = false;
             // 
             // manageItemsButton
             // 
-            this.manageItemsButton.BackColor = SystemColors.Control;
-            this.manageItemsButton.Location = new Point(7, 131);
-            this.manageItemsButton.Name = "manageItemsButton";
-            this.manageItemsButton.Size = new Size(125, 29);
-            this.manageItemsButton.TabIndex = 4;
-            this.manageItemsButton.Text = "Manage Items";
-            this.manageItemsButton.UseVisualStyleBackColor = true;
-            this.manageItemsButton.Click += manageItemsButton_Click;
+            manageItemsButton.BackColor = SystemColors.Control;
+            manageItemsButton.Location = new Point(7, 131);
+            manageItemsButton.Name = "manageItemsButton";
+            manageItemsButton.Size = new Size(125, 29);
+            manageItemsButton.TabIndex = 4;
+            manageItemsButton.Text = "Manage Items";
+            manageItemsButton.UseVisualStyleBackColor = true;
+            manageItemsButton.Click += manageItemsButton_Click;
             // 
             // addStockButton
             // 
-            this.addStockButton.BackColor = SystemColors.ControlDarkDark;
-            this.addStockButton.Location = new Point(7, 96);
-            this.addStockButton.Name = "addStockButton";
-            this.addStockButton.RightToLeft = RightToLeft.Yes;
-            this.addStockButton.Size = new Size(125, 29);
-            this.addStockButton.TabIndex = 3;
-            this.addStockButton.Text = "Add Stock";
-            this.addStockButton.UseVisualStyleBackColor = false;
-            this.addStockButton.Click += addStockButton_Click;
+            addStockButton.BackColor = SystemColors.Control;
+            addStockButton.Location = new Point(7, 96);
+            addStockButton.Name = "addStockButton";
+            addStockButton.RightToLeft = RightToLeft.Yes;
+            addStockButton.Size = new Size(125, 29);
+            addStockButton.TabIndex = 3;
+            addStockButton.Text = "Add Stock";
+            addStockButton.UseVisualStyleBackColor = false;
+            addStockButton.Click += addStockButton_Click;
             // 
             // viewInventoryButton
             // 
-            this.viewInventoryButton.Location = new Point(7, 61);
-            this.viewInventoryButton.Name = "viewInventoryButton";
-            this.viewInventoryButton.Size = new Size(125, 29);
-            this.viewInventoryButton.TabIndex = 2;
-            this.viewInventoryButton.Text = "View Inventory";
-            this.viewInventoryButton.UseVisualStyleBackColor = true;
-            this.viewInventoryButton.Click += viewInventoryButton_Click;
+            viewInventoryButton.Location = new Point(7, 61);
+            viewInventoryButton.Name = "viewInventoryButton";
+            viewInventoryButton.Size = new Size(125, 29);
+            viewInventoryButton.TabIndex = 2;
+            viewInventoryButton.Text = "View Inventory";
+            viewInventoryButton.UseVisualStyleBackColor = true;
+            viewInventoryButton.Click += viewInventoryButton_Click;
             // 
             // overviewButton
             // 
-            this.overviewButton.BackColor = SystemColors.ActiveCaption;
-            this.overviewButton.FlatStyle = FlatStyle.Popup;
-            this.overviewButton.ForeColor = SystemColors.ActiveCaptionText;
-            this.overviewButton.Location = new Point(7, 26);
-            this.overviewButton.Name = "overviewButton";
-            this.overviewButton.Size = new Size(125, 29);
-            this.overviewButton.TabIndex = 1;
-            this.overviewButton.Text = "Overview";
-            this.overviewButton.UseVisualStyleBackColor = false;
-            this.overviewButton.Click += overviewButton_Click;
+            overviewButton.BackColor = SystemColors.ActiveCaption;
+            overviewButton.FlatStyle = FlatStyle.Popup;
+            overviewButton.ForeColor = SystemColors.ActiveCaptionText;
+            overviewButton.Location = new Point(7, 26);
+            overviewButton.Name = "overviewButton";
+            overviewButton.Size = new Size(125, 29);
+            overviewButton.TabIndex = 1;
+            overviewButton.Text = "Overview";
+            overviewButton.UseVisualStyleBackColor = false;
+            overviewButton.Click += overviewButton_Click;
             // 
             // NavigationControl
             // 
-            this.AutoScaleDimensions = new SizeF(8F, 20F);
-            this.AutoScaleMode = AutoScaleMode.Font;
-            this.Controls.Add(this.groupBox);
-            this.Name = "NavigationControl";
-            this.Size = new Size(139, 452);
-            this.groupBox.ResumeLayout(false);
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(groupBox);
+            Name = "NavigationControl";
+            Size = new Size(139, 452);
+            groupBox.ResumeLayout(false);
+            ResumeLayout(false);
         }
 
         #endregion
