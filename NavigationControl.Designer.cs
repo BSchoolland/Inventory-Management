@@ -118,7 +118,7 @@ namespace Inventory_Management
             // 
             // overviewButton
             // 
-            overviewButton.BackColor = SystemColors.ActiveCaption;
+            overviewButton.BackColor = SystemColors.Control;
             overviewButton.FlatStyle = FlatStyle.Popup;
             overviewButton.ForeColor = SystemColors.ActiveCaptionText;
             overviewButton.Location = new Point(7, 26);
@@ -126,7 +126,7 @@ namespace Inventory_Management
             overviewButton.Size = new Size(125, 29);
             overviewButton.TabIndex = 1;
             overviewButton.Text = "Overview";
-            overviewButton.UseVisualStyleBackColor = false;
+            overviewButton.UseVisualStyleBackColor = true;
             overviewButton.Click += overviewButton_Click;
             // 
             // NavigationControl

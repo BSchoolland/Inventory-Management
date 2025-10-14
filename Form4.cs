@@ -24,7 +24,7 @@ namespace Inventory_Management
             form3 = parent3;
             InitializeComponent();
             this.FormClosed += (s, e) => Application.Exit();
-            var nav = new NavigationControl();
+            var nav = new NavigationControl(NavigationControl.NavigationPage.AddStock);
             nav.Location = new Point(0, 0);
             Controls.Add(nav);
             

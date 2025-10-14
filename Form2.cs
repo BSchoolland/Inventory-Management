@@ -24,7 +24,7 @@ namespace Inventory_Management
             this.FormClosed += (s, e) => Application.Exit();
             form3 = new Form3(form1, this);
             form4 = new Form4(form1, this, form3);
-            var nav = new NavigationControl();
+            var nav = new NavigationControl(NavigationControl.NavigationPage.ViewInventory);
             nav.Location = new Point(0, 0);
             Controls.Add(nav);
             
