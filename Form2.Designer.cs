@@ -169,7 +169,7 @@ namespace Inventory_Management
             Controls.Add(panelInventory);
             Controls.Add(clearFiltersButton);
             Name = "Form2";
-            Text = "Form2";
+            Text = "View Inventory";
             Load += Form2_Load;
             ((System.ComponentModel.ISupportInitialize)priceMinUpDown).EndInit();
             ((System.ComponentModel.ISupportInitialize)priceMaxUpDown).EndInit();

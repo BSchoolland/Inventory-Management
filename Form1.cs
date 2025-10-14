@@ -18,7 +18,7 @@ namespace Inventory_Management
             nav = new NavigationControl();
             nav.Location = new Point(0, 0);
             Controls.Add(nav);
-            if (groupBox1 != null) groupBox1.Visible = false;
+            
 
             nav.OverviewClicked += (s, e) => button1_Click(s, e);
             nav.ViewInventoryClicked += (s, e) => button2_Click(s, e);

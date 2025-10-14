@@ -10,6 +10,7 @@ namespace Inventory_Management
         private Form1 form1;
         private Form2 form2;
         private NavigationControl nav;
+		private List<string> cachedItemNames = new();
 
         public Form3(Form1 parent1, Form2 parent2)
         {
@@ -21,7 +22,7 @@ namespace Inventory_Management
             nav = new NavigationControl();
             nav.Location = new Point(0, 0);
             Controls.Add(nav);
-            if (groupBox1 != null) groupBox1.Visible = false;
+
 
             nav.OverviewClicked += (s, e) => button1_Click(s, e);
             nav.ViewInventoryClicked += (s, e) => button2_Click(s, e);
@@ -83,6 +84,7 @@ namespace Inventory_Management
                 var storage = rootList[0];
 
                 int added = 0, updated = 0, skipped = 0, errors = 0;
+                var bulkChoice = UpdateDecision.AskEach;
                 foreach (var raw in lines)
                 {
                     if (string.IsNullOrWhiteSpace(raw)) { continue; }
@@ -100,14 +102,23 @@ namespace Inventory_Management
                     var existing = storage.Items.FirstOrDefault(i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase));
                     if (existing != null)
                     {
-                        var resp = MessageBox.Show($"'{name}' exists. Update price/quantity?", "Confirm Update", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                        if (resp == DialogResult.Yes)
+                        UpdateDecision decision = bulkChoice;
+                        if (decision == UpdateDecision.AskEach)
+                        {
+                            decision = ShowBulkUpdateDialog(name);
+                            if (decision == UpdateDecision.YesToAll || decision == UpdateDecision.SkipAll)
+                            {
+                                bulkChoice = decision;
+                            }
+                        }
+
+                        if (decision == UpdateDecision.Yes || decision == UpdateDecision.YesToAll)
                         {
                             existing.CurrentPrice = price;
                             existing.StockQuantity = qty;
                             updated++;
                         }
-                        else
+                        else if (decision == UpdateDecision.Skip || decision == UpdateDecision.SkipAll)
                         {
                             skipped++;
                         }
@@ -126,8 +137,10 @@ namespace Inventory_Management
                     }
                 }
 
-                SaveStorage(rootList);
-                MessageBox.Show($"Added: {added}\nUpdated: {updated}\nSkipped: {skipped}\nErrors: {errors}", "Upload Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				SaveStorage(rootList);
+				MessageBox.Show($"Added: {added}\nUpdated: {updated}\nSkipped: {skipped}\nErrors: {errors}", "Upload Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				RefreshItemNames();
+				UpdateDeleteUIState();
             }
             catch (Exception ex)
             {
@@ -184,6 +197,209 @@ namespace Inventory_Management
         private void label2_Click_1(object sender, EventArgs e)
         {
 
+        }
+
+        private void deleteButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var roots = LoadStorage();
+                if (roots.Count == 0)
+                {
+                    MessageBox.Show("No storage found.");
+                    return;
+                }
+                var storage = roots[0];
+                var name = deleteNameTextBox.Text.Trim();
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    MessageBox.Show("Enter a name to delete.");
+                    return;
+                }
+
+                var removed = storage.Items.RemoveAll(i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase));
+                if (removed > 0)
+                {
+                    SaveStorage(roots);
+                    MessageBox.Show($"Deleted {removed} item(s) named '{name}'.");
+					RefreshItemNames();
+					UpdateDeleteUIState();
+                }
+                else
+                {
+                    MessageBox.Show($"No item found with name '{name}'.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Delete failed: {ex.Message}");
+            }
+        }
+
+        private void addManualButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                EnsureDataFile();
+                var roots = LoadStorage();
+                if (roots.Count == 0)
+                {
+                    roots.Add(new StorageRoot { Items = new List<StorageItem>() });
+                }
+                var storage = roots[0];
+
+                string name = nameTextBox.Text.Trim();
+                if (string.IsNullOrWhiteSpace(name)) { MessageBox.Show("Name is required."); return; }
+                if (!decimal.TryParse(priceTextBox.Text.Trim(), out var price)) { MessageBox.Show("Invalid price."); return; }
+                if (!int.TryParse(qtyTextBox.Text.Trim(), out var qty)) { MessageBox.Show("Invalid quantity."); return; }
+
+                var existing = storage.Items.FirstOrDefault(i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase));
+                if (existing != null)
+                {
+                    var resp = MessageBox.Show($"'{name}' exists. Update price/quantity?", "Confirm Update", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (resp == DialogResult.Yes)
+                    {
+                        existing.CurrentPrice = price;
+                        existing.StockQuantity = qty;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Add cancelled.");
+                        return;
+                    }
+                }
+                else
+                {
+                    storage.Items.Add(new StorageItem
+                    {
+                        Name = name,
+                        Description = string.Empty,
+                        CurrentPrice = price,
+                        StockQuantity = qty,
+                        Barcode = string.Empty
+                    });
+                }
+
+				SaveStorage(roots);
+				MessageBox.Show("Item saved.");
+				RefreshItemNames();
+				UpdateDeleteUIState();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Add failed: {ex.Message}");
+            }
+        }
+
+        private void deleteNameTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (cachedItemNames.Count == 0) RefreshItemNames();
+            UpdateDeleteUIState();
+        }
+
+        private void deleteSuggestionsListBox_Click(object sender, EventArgs e)
+        {
+            if (deleteSuggestionsListBox.SelectedItem is string name)
+            {
+                deleteNameTextBox.Text = name;
+                deleteSuggestionsListBox.Visible = false;
+            }
+        }
+
+        private void UpdateDeleteUIState()
+        {
+            string text = deleteNameTextBox.Text.Trim();
+            var matches = string.IsNullOrEmpty(text)
+                ? new List<string>()
+                : cachedItemNames
+                    .Where(n => n.Contains(text, StringComparison.OrdinalIgnoreCase))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .Take(5)
+                    .ToList();
+
+            deleteSuggestionsListBox.BeginUpdate();
+            deleteSuggestionsListBox.Items.Clear();
+            foreach (var m in matches) deleteSuggestionsListBox.Items.Add(m);
+            deleteSuggestionsListBox.EndUpdate();
+            deleteSuggestionsListBox.Visible = matches.Count > 0 && !matches.Any(m => string.Equals(m, text, StringComparison.OrdinalIgnoreCase));
+
+            bool exact = cachedItemNames.Any(n => string.Equals(n, text, StringComparison.OrdinalIgnoreCase));
+            deleteButton.Enabled = exact;
+        }
+
+        private void RefreshItemNames()
+        {
+            try
+            {
+                var roots = LoadStorage();
+                var list = roots.Count > 0 ? roots[0].Items.Select(i => i.Name).Where(n => !string.IsNullOrWhiteSpace(n)).ToList() : new List<string>();
+                cachedItemNames = list;
+            }
+            catch
+            {
+                cachedItemNames = new List<string>();
+            }
+        }
+
+        private void Form3_Load(object sender, EventArgs e)
+        {
+            RefreshItemNames();
+            UpdateDeleteUIState();
+        }
+
+        private enum UpdateDecision
+        {
+            AskEach,
+            YesToAll,
+            Yes,
+            Skip,
+            SkipAll
+        }
+
+        private static UpdateDecision ShowBulkUpdateDialog(string name)
+        {
+            using var dlg = new Form();
+            dlg.Text = "Confirm Update";
+            dlg.StartPosition = FormStartPosition.CenterParent;
+            dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
+            dlg.MinimizeBox = false;
+            dlg.MaximizeBox = false;
+            dlg.ShowInTaskbar = false;
+            dlg.ClientSize = new Size(420, 150);
+
+            var label = new Label
+            {
+                AutoSize = false,
+                Text = $"'{name}' exists. What would you like to do?",
+                TextAlign = ContentAlignment.MiddleLeft,
+                Location = new Point(12, 12),
+                Size = new Size(396, 60)
+            };
+            dlg.Controls.Add(label);
+
+            UpdateDecision result = UpdateDecision.Skip;
+
+            var btnYesAll = new Button { Text = "Update all", Size = new Size(90, 28), Location = new Point(12, 100) };
+            btnYesAll.Click += (s, e) => { result = UpdateDecision.YesToAll; dlg.Close(); };
+            dlg.Controls.Add(btnYesAll);
+
+            var btnYes = new Button { Text = "Update " + name, Size = new Size(80, 28), Location = new Point(112, 100) };
+            btnYes.Click += (s, e) => { result = UpdateDecision.Yes; dlg.Close(); };
+            dlg.Controls.Add(btnYes);
+
+            var btnSkip = new Button { Text = "Skip", Size = new Size(80, 28), Location = new Point(202, 100) };
+            btnSkip.Click += (s, e) => { result = UpdateDecision.Skip; dlg.Close(); };
+            dlg.Controls.Add(btnSkip);
+
+            var btnSkipAll = new Button { Text = "Skip all", Size = new Size(90, 28), Location = new Point(292, 100) };
+            btnSkipAll.Click += (s, e) => { result = UpdateDecision.SkipAll; dlg.Close(); };
+            dlg.Controls.Add(btnSkipAll);
+
+            dlg.AcceptButton = btnYes;
+            dlg.CancelButton = btnSkip;
+
+            dlg.ShowDialog();
+            return result;
         }
     }
 }
