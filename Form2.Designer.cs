@@ -118,7 +118,7 @@ namespace Inventory_Management
             button4.Name = "button4";
             button4.Size = new Size(125, 29);
             button4.TabIndex = 4;
-            button4.Text = "Add Items";
+            button4.Text = "Manage Items";
             button4.UseVisualStyleBackColor = true;
             button4.Click += button4_Click;
             // 
@@ -189,8 +189,8 @@ namespace Inventory_Management
             priceMinUpDown.Name = "priceMinUpDown";
             priceMinUpDown.Size = new Size(60, 27);
             priceMinUpDown.TabIndex = 15;
-            priceMinUpDown.ValueChanged += filter_ValueChanged;
             priceMinUpDown.TextChanged += filter_TextChanged;
+            priceMinUpDown.ValueChanged += filter_ValueChanged;
             // 
             // priceMaxUpDown
             // 
@@ -200,8 +200,8 @@ namespace Inventory_Management
             priceMaxUpDown.Size = new Size(60, 27);
             priceMaxUpDown.TabIndex = 16;
             priceMaxUpDown.Value = new decimal(new int[] { 1000, 0, 0, 0 });
-            priceMaxUpDown.ValueChanged += filter_ValueChanged;
             priceMaxUpDown.TextChanged += filter_TextChanged;
+            priceMaxUpDown.ValueChanged += filter_ValueChanged;
             // 
             // stockMinUpDown
             // 
@@ -210,8 +210,8 @@ namespace Inventory_Management
             stockMinUpDown.Name = "stockMinUpDown";
             stockMinUpDown.Size = new Size(50, 27);
             stockMinUpDown.TabIndex = 18;
-            stockMinUpDown.ValueChanged += filter_ValueChanged;
             stockMinUpDown.TextChanged += filter_TextChanged;
+            stockMinUpDown.ValueChanged += filter_ValueChanged;
             // 
             // stockMaxUpDown
             // 
@@ -221,8 +221,8 @@ namespace Inventory_Management
             stockMaxUpDown.Size = new Size(50, 27);
             stockMaxUpDown.TabIndex = 19;
             stockMaxUpDown.Value = new decimal(new int[] { 1000, 0, 0, 0 });
-            stockMaxUpDown.ValueChanged += filter_ValueChanged;
             stockMaxUpDown.TextChanged += filter_TextChanged;
+            stockMaxUpDown.ValueChanged += filter_ValueChanged;
             // 
             // priceLabel
             // 

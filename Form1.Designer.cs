@@ -97,7 +97,7 @@
             button4.Name = "button4";
             button4.Size = new Size(125, 29);
             button4.TabIndex = 4;
-            button4.Text = "Add Items";
+            button4.Text = "Manage Items";
             button4.UseVisualStyleBackColor = true;
             button4.Click += button4_Click;
             // 
@@ -185,6 +185,7 @@
             Controls.Add(groupBox1);
             Name = "Form1";
             Text = "Form1";
+            Load += Form1_Load;
             groupBox1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();

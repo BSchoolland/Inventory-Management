@@ -37,9 +37,8 @@ namespace Inventory_Management
             InventoryNavButton = new Button();
             OverviewNavButton = new Button();
             label1 = new Label();
+            uploadButton = new Button();
             label2 = new Label();
-            label3 = new Label();
-            label4 = new Label();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
@@ -97,7 +96,7 @@ namespace Inventory_Management
             button4.Name = "button4";
             button4.Size = new Size(125, 29);
             button4.TabIndex = 4;
-            button4.Text = "Add Items";
+            button4.Text = "Manage Items";
             button4.UseVisualStyleBackColor = false;
             button4.Click += button4_Click;
             // 
@@ -141,46 +140,37 @@ namespace Inventory_Management
             label1.AutoSize = true;
             label1.Location = new Point(393, 9);
             label1.Name = "label1";
-            label1.Size = new Size(70, 20);
+            label1.Size = new Size(103, 20);
             label1.TabIndex = 1;
-            label1.Text = "Overview";
+            label1.Text = "Manage Items";
+            // 
+            // uploadButton
+            // 
+            uploadButton.Location = new Point(229, 120);
+            uploadButton.Name = "uploadButton";
+            uploadButton.Size = new Size(150, 30);
+            uploadButton.TabIndex = 5;
+            uploadButton.Text = "Upload Text File";
+            uploadButton.UseVisualStyleBackColor = true;
+            uploadButton.Click += uploadButton_Click;
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(356, 96);
+            label2.Location = new Point(249, 96);
             label2.Name = "label2";
-            label2.Size = new Size(141, 20);
-            label2.TabIndex = 2;
-            label2.Text = "Info Would Go Here";
-            label2.Click += label2_Click;
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(356, 245);
-            label3.Name = "label3";
-            label3.Size = new Size(135, 20);
-            label3.TabIndex = 3;
-            label3.Text = "Suggested Actions:";
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Location = new Point(302, 302);
-            label4.Name = "label4";
-            label4.Size = new Size(238, 20);
-            label4.TabIndex = 4;
-            label4.Text = "Suggested Actions Would Go Here";
+            label2.Size = new Size(99, 20);
+            label2.TabIndex = 6;
+            label2.Text = "Item uploads:";
+            label2.Click += label2_Click_1;
             // 
             // Form3
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Controls.Add(label4);
-            Controls.Add(label3);
             Controls.Add(label2);
+            Controls.Add(uploadButton);
             Controls.Add(label1);
             Controls.Add(groupBox1);
             Name = "Form3";
@@ -201,9 +191,8 @@ namespace Inventory_Management
         private Button button4;
         private Button button3;
         private Label label1;
+        private Button uploadButton;
         private Label label2;
-        private Label label3;
-        private Label label4;
     }
 }
 

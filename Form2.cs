@@ -2,6 +2,7 @@ using System.Media;
 using System.Text.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 namespace Inventory_Management
 {
@@ -25,11 +26,13 @@ namespace Inventory_Management
             ClearFilters();
             ApplyFilters();
             displayInventory();
+            this.Activated += (s, e) => RefreshFromStorage();
         }
 
         private void LoadInventory()
         {
-            string jsonData = @"[ { ""items"": [ { ""name"": ""Great Value Whole Milk"", ""description"": ""1 gallon jug, 2% reduced fat milk"", ""current_price"": 3.28, ""stock_quantity"": 120, ""barcode"": ""078742054355"" }, { ""name"": ""Wonder Classic White Bread"", ""description"": ""20 oz loaf of sliced white bread"", ""current_price"": 2.48, ""stock_quantity"": 80, ""barcode"": ""072250010002"" }, { ""name"": ""Lay's Classic Potato Chips"", ""description"": ""8 oz party size bag of potato chips"", ""current_price"": 4.29, ""stock_quantity"": 60, ""barcode"": ""028400044709"" }, { ""name"": ""Great Value Large Eggs"", ""description"": ""12 count carton of Grade A large eggs"", ""current_price"": 2.29, ""stock_quantity"": 150, ""barcode"": ""078742059732"" }, { ""name"": ""Coca-Cola 12 Pack"", ""description"": ""12 fl oz cans, 12 count"", ""current_price"": 6.98, ""stock_quantity"": 90, ""barcode"": ""049000050103"" }, { ""name"": ""Bounty Paper Towels"", ""description"": ""6 double rolls, white, select-a-size"", ""current_price"": 12.97, ""stock_quantity"": 45, ""barcode"": ""037000748194"" }, { ""name"": ""Charmin Ultra Soft Toilet Paper"", ""description"": ""12 mega rolls, 2-ply"", ""current_price"": 14.97, ""stock_quantity"": 50, ""barcode"": ""030772064092"" }, { ""name"": ""Hanes Men�s T-Shirt 5-Pack"", ""description"": ""Crew neck, size L, assorted colors"", ""current_price"": 17.84, ""stock_quantity"": 35, ""barcode"": ""038257587281"" }, { ""name"": ""George Men�s Jeans"", ""description"": ""Straight fit, dark wash, size 34x32"", ""current_price"": 19.97, ""stock_quantity"": 40, ""barcode"": ""887778123441"" }, { ""name"": ""Mainstays Bath Towel"", ""description"": ""100% cotton, 27 in x 52 in, navy blue"", ""current_price"": 4.88, ""stock_quantity"": 70, ""barcode"": ""787139693250"" }, { ""name"": ""Ozark Trail Stainless Steel Tumbler"", ""description"": ""30 oz insulated tumbler with lid, silver"", ""current_price"": 9.94, ""stock_quantity"": 55, ""barcode"": ""810055480239"" }, { ""name"": ""Samsung 32-inch Smart TV"", ""description"": ""HD 720p with built-in apps"", ""current_price"": 158.00, ""stock_quantity"": 12, ""barcode"": ""887276567321"" }, { ""name"": ""Duracell AA Batteries"", ""description"": ""16 pack of alkaline AA batteries"", ""current_price"": 14.24, ""stock_quantity"": 65, ""barcode"": ""041333150014"" }, { ""name"": ""Crayola Crayons 24 Count"", ""description"": ""Classic color crayons for kids"", ""current_price"": 1.47, ""stock_quantity"": 200, ""barcode"": ""071662000249"" }, { ""name"": ""LEGO Classic Medium Brick Box"", ""description"": ""484-piece building set, ages 4+"", ""current_price"": 34.76, ""stock_quantity"": 25, ""barcode"": ""673419232904"" } ] } ]";
+            EnsureDataFile();
+            string jsonData = File.ReadAllText(GetDataFilePath());
             var doc = JsonDocument.Parse(jsonData);
             var items = doc.RootElement[0].GetProperty("items");
             foreach (var item in items.EnumerateArray())
@@ -37,10 +40,10 @@ namespace Inventory_Management
                 inventoryItems.Add(new InventoryItem
                 {
                     Name = item.GetProperty("name").GetString(),
-                    Description = item.GetProperty("description").GetString(),
+                    Description = item.TryGetProperty("description", out var d) ? d.GetString() : string.Empty,
                     CurrentPrice = item.GetProperty("current_price").GetDecimal(),
                     StockQuantity = item.GetProperty("stock_quantity").GetInt32(),
-                    Barcode = item.GetProperty("barcode").GetString()
+                    Barcode = item.TryGetProperty("barcode", out var b) ? b.GetString() : string.Empty
                 });
             }
         }
@@ -204,6 +207,37 @@ namespace Inventory_Management
             currentPage = 0;
             ApplyFilters();
             displayInventory();
+        }
+
+        private void RefreshFromStorage()
+        {
+            try
+            {
+                inventoryItems.Clear();
+                LoadInventory();
+                currentPage = 0;
+                ApplyFilters();
+                displayInventory();
+            }
+            catch { }
+        }
+
+        private static string GetDataFilePath()
+        {
+            string dir = Path.Combine(AppContext.BaseDirectory, "data");
+            return Path.Combine(dir, "items.json");
+        }
+
+        private static void EnsureDataFile()
+        {
+            string dir = Path.Combine(AppContext.BaseDirectory, "data");
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            string path = Path.Combine(dir, "items.json");
+            if (!File.Exists(path))
+            {
+                string seed = "[ { \"items\": [] } ]";
+                File.WriteAllText(path, seed);
+            }
         }
     }
 
