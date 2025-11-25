@@ -11,10 +11,7 @@ namespace Inventory_Management
         private Form1 form1;
         private Form2 form2;
         private Form3 form3;
-        private List<InventoryItem> inventoryItems = new();
-        private int currentPage = 0;
-        private int itemsPerPage = 5;
-        private int totalPages = 0;
+        private InventoryManager inventoryManager;
         private List<InventoryItem> filteredItems = new();
 
         public Form4(Form1 parent1, Form2 parent2, Form3 parent3)
@@ -24,10 +21,14 @@ namespace Inventory_Management
             form3 = parent3;
             InitializeComponent();
             this.FormClosed += (s, e) => Application.Exit();
+
+            inventoryManager = new InventoryManager();
+            dataGridViewInventory.DataSource = inventoryManager.BindingSource;
+            ConfigureDataGridViewColumns();
+
             var nav = new NavigationControl(NavigationControl.NavigationPage.AddStock);
             nav.Location = new Point(0, 0);
             Controls.Add(nav);
-            
 
             nav.OverviewClicked += (s, e) => { form1.Show(); this.Hide(); };
             nav.ViewInventoryClicked += (s, e) => { form2.Show(); this.Hide(); };
@@ -35,17 +36,82 @@ namespace Inventory_Management
             nav.AddStockClicked += (s, e) => { SystemSounds.Hand.Play(); };
             nav.ProjectionsClicked += (s, e) => SystemSounds.Beep.Play();
             nav.CheckoutClicked += (s, e) => SystemSounds.Beep.Play();
-            inventoryItems = InventoryStorage.LoadItems();
+
+            // Initialize filters after inventoryManager is ready
             ClearFilters();
-            ApplyFilters();
-            displayInventory();
             this.Activated += (s, e) => RefreshFromStorage();
         }
 
-        private void LoadInventory() { inventoryItems = InventoryStorage.LoadItems(); }
+        /// <summary>
+        /// Configures DataGridView columns with proper formatting for currency and numbers.
+        /// </summary>
+        private void ConfigureDataGridViewColumns()
+        {
+            // Clear any default columns
+            dataGridViewInventory.Columns.Clear();
+
+            // Name column
+            dataGridViewInventory.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Name",
+                DataPropertyName = "Name",
+                HeaderText = "Item Name",
+                Width = 150
+            });
+
+            // Description column
+            dataGridViewInventory.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Description",
+                DataPropertyName = "Description",
+                HeaderText = "Description",
+                Width = 120
+            });
+
+            // Price column - formatted as currency
+            var priceColumn = new DataGridViewTextBoxColumn
+            {
+                Name = "Price",
+                DataPropertyName = "CurrentPrice",
+                HeaderText = "Price",
+                Width = 100,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    Format = "c2",
+                    Alignment = DataGridViewContentAlignment.MiddleLeft
+                }
+            };
+            dataGridViewInventory.Columns.Add(priceColumn);
+
+            // Stock Quantity column - left-aligned with commas
+            var quantityColumn = new DataGridViewTextBoxColumn
+            {
+                Name = "StockQuantity",
+                DataPropertyName = "StockQuantity",
+                HeaderText = "Stock",
+                Width = 80,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    Format = "N0",
+                    Alignment = DataGridViewContentAlignment.MiddleLeft
+                }
+            };
+            dataGridViewInventory.Columns.Add(quantityColumn);
+
+            // Barcode column
+            dataGridViewInventory.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Barcode",
+                DataPropertyName = "Barcode",
+                HeaderText = "Barcode",
+                Width = 120
+            });
+        }
 
         private void ApplyFilters()
         {
+            if (inventoryManager == null) return;
+
             string search = searchTextBox.Text;
             bool priceMinBlank = string.IsNullOrWhiteSpace(priceMinUpDown.Text);
             bool priceMaxBlank = string.IsNullOrWhiteSpace(priceMaxUpDown.Text);
@@ -55,65 +121,34 @@ namespace Inventory_Management
             decimal? priceMax = priceMaxBlank ? null : priceMaxUpDown.Value;
             int? stockMin = stockMinBlank ? null : (int)stockMinUpDown.Value;
             int? stockMax = stockMaxBlank ? null : (int)stockMaxUpDown.Value;
-            filteredItems = InventoryFilters.Apply(inventoryItems, search, priceMin, priceMax, stockMin, stockMax);
-            totalPages = (int)Math.Ceiling(filteredItems.Count / (double)itemsPerPage);
-            if (currentPage >= totalPages) currentPage = 0;
+            filteredItems = InventoryFilters.Apply(inventoryManager.MasterInventory, search, priceMin, priceMax, stockMin, stockMax);
+            DisplayFilteredInventory();
         }
 
-        private void displayInventory()
+        private void DisplayFilteredInventory()
         {
-            int startIdx = currentPage * itemsPerPage;
-            int endIdx = Math.Min(startIdx + itemsPerPage, filteredItems.Count);
-            InventoryUI.RenderCards(
-                panelInventory,
-                filteredItems,
-                startIdx,
-                endIdx,
-                it => it.Name,
-                it => it.Description,
-                it => it.CurrentPrice,
-                it => it.StockQuantity,
-                it => it.Barcode,
-                (it, addQty) =>
-                {
-                    if (addQty <= 0) return;
-                    TryAddStock(it.Name, addQty);
-                    RefreshFromStorage();
-                });
-            buttonBackward.Enabled = currentPage > 0;
-            buttonForward.Enabled = currentPage < totalPages - 1;
+            // Update DataGridView with filtered items
+            inventoryManager.BindingSource.DataSource = new BindingSource(filteredItems, null);
         }
 
         private void searchTextBox_TextChanged(object sender, EventArgs e)
         {
-            currentPage = 0;
             ApplyFilters();
-            displayInventory();
         }
 
         private void filter_ValueChanged(object sender, EventArgs e)
         {
-            currentPage = 0;
             ApplyFilters();
-            displayInventory();
         }
 
         private void buttonForward_Click(object sender, EventArgs e)
         {
-            if (currentPage < totalPages - 1)
-            {
-                currentPage++;
-                displayInventory();
-            }
+            // Pagination removed - DataGridView displays all filtered items
         }
 
         private void buttonBackward_Click(object sender, EventArgs e)
         {
-            if (currentPage > 0)
-            {
-                currentPage--;
-                displayInventory();
-            }
+            // Pagination removed - DataGridView displays all filtered items
         }
 
         private void clearFiltersButton_Click(object sender, EventArgs e)
@@ -128,9 +163,10 @@ namespace Inventory_Management
             priceMaxUpDown.Text = "";
             stockMinUpDown.Text = "";
             stockMaxUpDown.Text = "";
-            currentPage = 0;
-            ApplyFilters();
-            displayInventory();
+            if (inventoryManager != null)
+            {
+                ApplyFilters();
+            }
         }
 
         private void groupBox1_Enter(object sender, EventArgs e) { }
@@ -156,34 +192,125 @@ namespace Inventory_Management
 
         private void filter_TextChanged(object sender, EventArgs e)
         {
-            currentPage = 0;
             ApplyFilters();
-            displayInventory();
         }
 
         private void RefreshFromStorage()
         {
             try
             {
-                inventoryItems = InventoryStorage.LoadItems();
-                currentPage = 0;
+                inventoryManager.Refresh();
                 ApplyFilters();
-                displayInventory();
             }
             catch { }
         }
-        private void TryAddStock(string name, int add)
+
+        /// <summary>
+        /// Handles adding a new item to the inventory.
+        /// </summary>
+        private void addButton_Click(object sender, EventArgs e)
         {
-            try
+            // Validate and parse input
+            if (!decimal.TryParse(priceTextBox.Text, out var price))
             {
-                var items = InventoryStorage.LoadItems();
-                var target = items.FirstOrDefault(i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase));
-                if (target == null) return;
-                target.StockQuantity += add;
-                InventoryStorage.SaveItems(items);
+                MessageBox.Show("Invalid price format. Please enter a valid decimal number.", "Input Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                priceTextBox.Focus();
+                return;
             }
-            catch { }
+
+            if (!int.TryParse(qtyTextBox.Text, out var qty))
+            {
+                MessageBox.Show("Invalid quantity format. Please enter a valid integer.", "Input Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                qtyTextBox.Focus();
+                return;
+            }
+
+            // Attempt to add the item
+            if (inventoryManager.TryAddItem(nameTextBox.Text, descriptionTextBox.Text, price, qty, barcodeTextBox.Text, out var errorMsg))
+            {
+                MessageBox.Show($"Item '{nameTextBox.Text}' added successfully.", "Success",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // Clear form
+                nameTextBox.Clear();
+                descriptionTextBox.Clear();
+                priceTextBox.Clear();
+                qtyTextBox.Clear();
+                barcodeTextBox.Clear();
+                RefreshFromStorage();
+            }
+            else
+            {
+                MessageBox.Show($"Failed to add item: {errorMsg}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
+
+        /// <summary>
+        /// Increments the stock quantity of the selected item.
+        /// </summary>
+        private void incButton_Click(object sender, EventArgs e)
+        {
+            if (dataGridViewInventory.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select an item to increment.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!int.TryParse(incQtyTextBox.Text, out var amount))
+            {
+                MessageBox.Show("Invalid amount format. Please enter a valid integer.", "Input Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                incQtyTextBox.Focus();
+                return;
+            }
+
+            int rowIndex = dataGridViewInventory.SelectedRows[0].Index;
+            if (inventoryManager.TryIncrementStock(rowIndex, amount, out var errorMsg))
+            {
+                RefreshFromStorage();
+            }
+            else
+            {
+                MessageBox.Show($"Failed to increment stock: {errorMsg}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Decrements the stock quantity of the selected item.
+        /// </summary>
+        private void decButton_Click(object sender, EventArgs e)
+        {
+            if (dataGridViewInventory.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select an item to decrement.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!int.TryParse(incQtyTextBox.Text, out var amount))
+            {
+                MessageBox.Show("Invalid amount format. Please enter a valid integer.", "Input Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                incQtyTextBox.Focus();
+                return;
+            }
+
+            int rowIndex = dataGridViewInventory.SelectedRows[0].Index;
+            if (inventoryManager.TryIncrementStock(rowIndex, -amount, out var errorMsg))
+            {
+                RefreshFromStorage();
+            }
+            else
+            {
+                MessageBox.Show($"Failed to decrement stock: {errorMsg}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
     }
 
 }

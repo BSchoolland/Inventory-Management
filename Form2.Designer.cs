@@ -28,7 +28,7 @@ namespace Inventory_Management
         /// </summary>
         private void InitializeComponent()
         {
-            panelInventory = new Panel();
+            dataGridViewInventory = new DataGridView();
             buttonForward = new Button();
             buttonBackward = new Button();
             searchTextBox = new TextBox();
@@ -39,19 +39,23 @@ namespace Inventory_Management
             priceLabel = new Label();
             stockLabel = new Label();
             clearFiltersButton = new Button();
+            ((System.ComponentModel.ISupportInitialize)dataGridViewInventory).BeginInit();
             ((System.ComponentModel.ISupportInitialize)priceMinUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)priceMaxUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)stockMinUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)stockMaxUpDown).BeginInit();
             SuspendLayout();
             // 
-            // panelInventory
+            // dataGridViewInventory
             // 
-            panelInventory.AutoScroll = true;
-            panelInventory.Location = new Point(160, 40);
-            panelInventory.Name = "panelInventory";
-            panelInventory.Size = new Size(600, 463);
-            panelInventory.TabIndex = 10;
+            dataGridViewInventory.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            dataGridViewInventory.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewInventory.Location = new Point(160, 40);
+            dataGridViewInventory.Name = "dataGridViewInventory";
+            dataGridViewInventory.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGridViewInventory.Size = new Size(600, 463);
+            dataGridViewInventory.TabIndex = 10;
+            dataGridViewInventory.ReadOnly = true;
             // 
             // buttonForward
             // 
@@ -166,11 +170,12 @@ namespace Inventory_Management
             Controls.Add(searchTextBox);
             Controls.Add(buttonBackward);
             Controls.Add(buttonForward);
-            Controls.Add(panelInventory);
+            Controls.Add(dataGridViewInventory);
             Controls.Add(clearFiltersButton);
             Name = "Form2";
             Text = "View Inventory";
             Load += Form2_Load;
+            ((System.ComponentModel.ISupportInitialize)dataGridViewInventory).EndInit();
             ((System.ComponentModel.ISupportInitialize)priceMinUpDown).EndInit();
             ((System.ComponentModel.ISupportInitialize)priceMaxUpDown).EndInit();
             ((System.ComponentModel.ISupportInitialize)stockMinUpDown).EndInit();
@@ -180,7 +185,7 @@ namespace Inventory_Management
         }
 
         #endregion
-        private Panel panelInventory;
+        private DataGridView dataGridViewInventory;
         private Button buttonForward;
         private Button buttonBackward;
         private TextBox searchTextBox;

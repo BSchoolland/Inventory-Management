@@ -2,6 +2,7 @@ namespace Inventory_Management
 {
     public static class InventoryUI
     {
+        private static int lastQuantity = 1;
         public static void RenderCards<T>(
             Panel container,
             IList<T> items,
@@ -72,12 +73,21 @@ namespace Inventory_Management
                 if (onAddQuantity != null)
                 {
                     var addLabel = new Label { AutoSize = true, Text = "+ Qty:", Location = new Point(260, 10) };
-                    var addUpDown = new NumericUpDown { Minimum = 1, Maximum = 1000000, Value = 1, Location = new Point(310, 8), Size = new Size(70, 27) };
-                    var addBtn = new Button { Text = "Add", Location = new Point(310, 38), Size = new Size(70, 29) };
-                    addBtn.Click += (s, e) => onAddQuantity(item, (int)addUpDown.Value);
+
+                    var addUpDown = new NumericUpDown { Minimum = 1, Maximum = 1000000, Value = lastQuantity, Location = new Point(310, 8), Size = new Size(70, 27) };
+                    
+                    var addBtn = new Button { Text = "Add", Location = new Point(230, 38), Size = new Size(70, 29) };
+
+                    addBtn.Click += (s, e) => { lastQuantity = (int)addUpDown.Value; onAddQuantity(item, (int)addUpDown.Value); };
+
+                    var removeBtn = new Button { Text = "Remove", Location = new Point(310, 38), Size = new Size(85, 29) };
+
+                    removeBtn.Click += (s, e) => { lastQuantity = (int)addUpDown.Value; onAddQuantity(item, -(int)addUpDown.Value); };
+
                     cardPanel.Controls.Add(addLabel);
                     cardPanel.Controls.Add(addUpDown);
                     cardPanel.Controls.Add(addBtn);
+                    cardPanel.Controls.Add(removeBtn);
                 }
 
                 container.Controls.Add(cardPanel);
