@@ -1,4 +1,6 @@
-namespace Inventory_Management
+using Inventory_Management.Models;
+
+namespace Inventory_Management.Services
 {
     public static class InventoryFilters
     {
@@ -24,5 +26,4 @@ namespace Inventory_Management
         }
     }
 }
-
 

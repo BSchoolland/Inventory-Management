@@ -1,39 +1,37 @@
 using System.Media;
-using System.Text.Json;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
+using Inventory_Management.Services;
+using Inventory_Management.Models;
 
-namespace Inventory_Management
+namespace Inventory_Management.Forms
 {
-    public partial class Form2 : Form
+    public partial class AddStockForm : Form
     {
-        private Form1 form1;
-        private Form3 form3;
-        private Form4 form4;
+        private OverviewForm overviewForm;
+        private InventoryViewForm inventoryViewForm;
+        private ManageItemsForm manageItemsForm;
         private InventoryManager inventoryManager;
         private List<InventoryItem> filteredItems = new();
 
-        public Form2(Form1 parentForm)
+        public AddStockForm(OverviewForm parentOverview, InventoryViewForm parentInventoryView, ManageItemsForm parentManageItems)
         {
-            form1 = parentForm;
+            overviewForm = parentOverview;
+            inventoryViewForm = parentInventoryView;
+            manageItemsForm = parentManageItems;
             InitializeComponent();
             this.FormClosed += (s, e) => Application.Exit();
-            form3 = new Form3(form1, this);
-            form4 = new Form4(form1, this, form3);
-            
+
             inventoryManager = new InventoryManager();
             dataGridViewInventory.DataSource = inventoryManager.BindingSource;
             ConfigureDataGridViewColumns();
 
-            var nav = new NavigationControl(NavigationControl.NavigationPage.ViewInventory);
+            var nav = new NavigationControl(NavigationControl.NavigationPage.AddStock);
             nav.Location = new Point(0, 0);
             Controls.Add(nav);
 
-            nav.OverviewClicked += (s, e) => { form1.Show(); this.Hide(); };
-            nav.ViewInventoryClicked += (s, e) => { SystemSounds.Hand.Play(); };
-            nav.ManageItemsClicked += (s, e) => { form3.Show(); this.Hide(); };
-            nav.AddStockClicked += (s, e) => { form4.Show(); this.Hide(); };
+            nav.OverviewClicked += (s, e) => { overviewForm.Show(); this.Hide(); };
+            nav.ViewInventoryClicked += (s, e) => { inventoryViewForm.Show(); this.Hide(); };
+            nav.ManageItemsClicked += (s, e) => { manageItemsForm.Show(); this.Hide(); };
+            nav.AddStockClicked += (s, e) => { SystemSounds.Hand.Play(); };
             nav.ProjectionsClicked += (s, e) => SystemSounds.Beep.Play();
             nav.CheckoutClicked += (s, e) => SystemSounds.Beep.Play();
 
@@ -111,7 +109,7 @@ namespace Inventory_Management
         private void ApplyFilters()
         {
             if (inventoryManager == null) return;
-            
+
             string search = searchTextBox.Text;
             bool priceMinBlank = string.IsNullOrWhiteSpace(priceMinUpDown.Text);
             bool priceMaxBlank = string.IsNullOrWhiteSpace(priceMaxUpDown.Text);
@@ -129,8 +127,6 @@ namespace Inventory_Management
         {
             // Update DataGridView with filtered items
             inventoryManager.BindingSource.DataSource = new BindingSource(filteredItems, null);
-            buttonBackward.Enabled = false;
-            buttonForward.Enabled = false;
         }
 
         private void searchTextBox_TextChanged(object sender, EventArgs e)
@@ -178,16 +174,16 @@ namespace Inventory_Management
         private void button3_Click(object sender, EventArgs e) { }
         private void button4_Click(object sender, EventArgs e)
         {
-            form3.Show();
+            manageItemsForm.Show();
             this.Hide();
         }
         private void button1_Click_1(object sender, EventArgs e)
         {
-            form1.Show();
+            overviewForm.Show();
             this.Hide();
         }
 
-        private void Form2_Load(object sender, EventArgs e)
+        private void Form4_Load(object sender, EventArgs e)
         {
 
         }
@@ -206,6 +202,114 @@ namespace Inventory_Management
             }
             catch { }
         }
+
+        /// <summary>
+        /// Handles adding a new item to the inventory.
+        /// </summary>
+        private void addButton_Click(object sender, EventArgs e)
+        {
+            // Validate and parse input
+            if (!decimal.TryParse(priceTextBox.Text, out var price))
+            {
+                MessageBox.Show("Invalid price format. Please enter a valid decimal number.", "Input Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                priceTextBox.Focus();
+                return;
+            }
+
+            if (!int.TryParse(qtyTextBox.Text, out var qty))
+            {
+                MessageBox.Show("Invalid quantity format. Please enter a valid integer.", "Input Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                qtyTextBox.Focus();
+                return;
+            }
+
+            // Attempt to add the item
+            if (inventoryManager.TryAddItem(nameTextBox.Text, descriptionTextBox.Text, price, qty, barcodeTextBox.Text, out var errorMsg))
+            {
+                MessageBox.Show($"Item '{nameTextBox.Text}' added successfully.", "Success",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // Clear form
+                nameTextBox.Clear();
+                descriptionTextBox.Clear();
+                priceTextBox.Clear();
+                qtyTextBox.Clear();
+                barcodeTextBox.Clear();
+                RefreshFromStorage();
+            }
+            else
+            {
+                MessageBox.Show($"Failed to add item: {errorMsg}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Increments the stock quantity of the selected item.
+        /// </summary>
+        private void incButton_Click(object sender, EventArgs e)
+        {
+            if (dataGridViewInventory.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select an item to increment.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!int.TryParse(incQtyTextBox.Text, out var amount))
+            {
+                MessageBox.Show("Invalid amount format. Please enter a valid integer.", "Input Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                incQtyTextBox.Focus();
+                return;
+            }
+
+            int rowIndex = dataGridViewInventory.SelectedRows[0].Index;
+            if (inventoryManager.TryIncrementStock(rowIndex, amount, out var errorMsg))
+            {
+                RefreshFromStorage();
+            }
+            else
+            {
+                MessageBox.Show($"Failed to increment stock: {errorMsg}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Decrements the stock quantity of the selected item.
+        /// </summary>
+        private void decButton_Click(object sender, EventArgs e)
+        {
+            if (dataGridViewInventory.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select an item to decrement.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!int.TryParse(incQtyTextBox.Text, out var amount))
+            {
+                MessageBox.Show("Invalid amount format. Please enter a valid integer.", "Input Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                incQtyTextBox.Focus();
+                return;
+            }
+
+            int rowIndex = dataGridViewInventory.SelectedRows[0].Index;
+            if (inventoryManager.TryIncrementStock(rowIndex, -amount, out var errorMsg))
+            {
+                RefreshFromStorage();
+            }
+            else
+            {
+                MessageBox.Show($"Failed to decrement stock: {errorMsg}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
     }
 
 }
+

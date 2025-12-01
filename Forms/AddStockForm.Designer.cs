@@ -1,6 +1,6 @@
-namespace Inventory_Management
+namespace Inventory_Management.Forms
 {
-    partial class Form4
+    partial class AddStockForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -329,7 +329,7 @@ namespace Inventory_Management
             incQtyTextBox.TabIndex = 25;
             incQtyTextBox.Text = "1";
             // 
-            // Form4
+            // AddStockForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -350,7 +350,7 @@ namespace Inventory_Management
             Controls.Add(buttonBackward);
             Controls.Add(buttonForward);
             Controls.Add(dataGridViewInventory);
-            Name = "Form4";
+            Name = "AddStockForm";
             Text = "Add Stock";
             Load += Form4_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridViewInventory).EndInit();

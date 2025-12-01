@@ -1,6 +1,6 @@
-﻿namespace Inventory_Management
+﻿namespace Inventory_Management.Forms
 {
-    partial class Form1
+    partial class OverviewForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -71,7 +71,7 @@
             label4.TabIndex = 4;
             label4.Text = "Suggested Actions Would Go Here";
             // 
-            // Form1
+            // OverviewForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -80,7 +80,7 @@
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
-            Name = "Form1";
+            Name = "OverviewForm";
             Text = "Overview";
             Load += Form1_Load;
             ResumeLayout(false);

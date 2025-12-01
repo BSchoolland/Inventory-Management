@@ -1,33 +1,35 @@
 using System.Media;
 using System.Text;
+using Inventory_Management.Services;
+using Inventory_Management.Models;
 
-namespace Inventory_Management
+namespace Inventory_Management.Forms
 {
-    public partial class Form3 : Form
+    public partial class ManageItemsForm : Form
     {
-        private Form1 form1;
-        private Form2 form2;
+        private OverviewForm overviewForm;
+        private InventoryViewForm inventoryViewForm;
         private NavigationControl nav;
-		private List<string> cachedItemNames = new();
-        private Form4 form4;
+        private List<string> cachedItemNames = new();
+        private AddStockForm addStockForm;
 
-        public Form3(Form1 parent1, Form2 parent2)
+        public ManageItemsForm(OverviewForm parentOverview, InventoryViewForm parentInventoryView)
         {
-            form1 = parent1;
-            form2 = parent2;
+            overviewForm = parentOverview;
+            inventoryViewForm = parentInventoryView;
             InitializeComponent();
             this.FormClosed += (s, e) => Application.Exit();
 
             nav = new NavigationControl(NavigationControl.NavigationPage.ManageItems);
             nav.Location = new Point(0, 0);
             Controls.Add(nav);
-            form4 = new Form4(form1, form2, this);
+            addStockForm = new AddStockForm(overviewForm, inventoryViewForm, this);
 
 
-            nav.OverviewClicked += (s, e) => button1_Click(s, e);
-            nav.ViewInventoryClicked += (s, e) => button2_Click(s, e);
-            nav.ManageItemsClicked += (s, e) => button4_Click(s, e);
-            nav.AddStockClicked += (s, e) => { form4.Show(); this.Hide(); };
+            nav.OverviewClicked += (s, e) => button1_Click(this, e);
+            nav.ViewInventoryClicked += (s, e) => button2_Click(this, e);
+            nav.ManageItemsClicked += (s, e) => button4_Click(this, e);
+            nav.AddStockClicked += (s, e) => { addStockForm.Show(); this.Hide(); };
             nav.ProjectionsClicked += (s, e) => SystemSounds.Beep.Play();
             nav.CheckoutClicked += (s, e) => SystemSounds.Beep.Play();
         }
@@ -37,15 +39,15 @@ namespace Inventory_Management
 
         private void button1_Click(object sender, EventArgs e)
         {
-            // Overview -> go to Form1
-            form1.Show();
+            // Overview -> go to OverviewForm
+            overviewForm.Show();
             this.Hide();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            // View Inventory -> go to Form2
-            form2.Show();
+            // View Inventory -> go to InventoryViewForm
+            inventoryViewForm.Show();
             this.Hide();
         }
 
@@ -130,10 +132,10 @@ namespace Inventory_Management
                     }
                 }
 
-				InventoryStorage.SaveItems(items);
-				MessageBox.Show($"Added: {added}\nUpdated: {updated}\nSkipped: {skipped}\nErrors: {errors}", "Upload Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
-				RefreshItemNames();
-				UpdateDeleteUIState();
+                InventoryStorage.SaveItems(items);
+                MessageBox.Show($"Added: {added}\nUpdated: {updated}\nSkipped: {skipped}\nErrors: {errors}", "Upload Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                RefreshItemNames();
+                UpdateDeleteUIState();
             }
             catch (Exception ex)
             {
@@ -165,8 +167,8 @@ namespace Inventory_Management
                 {
                     InventoryStorage.SaveItems(items);
                     MessageBox.Show($"Deleted {removed} item(s) named '{name}'.");
-					RefreshItemNames();
-					UpdateDeleteUIState();
+                    RefreshItemNames();
+                    UpdateDeleteUIState();
                 }
                 else
                 {
@@ -218,10 +220,10 @@ namespace Inventory_Management
                     });
                 }
 
-				InventoryStorage.SaveItems(items);
-				MessageBox.Show("Item saved.");
-				RefreshItemNames();
-				UpdateDeleteUIState();
+                InventoryStorage.SaveItems(items);
+                MessageBox.Show("Item saved.");
+                RefreshItemNames();
+                UpdateDeleteUIState();
             }
             catch (Exception ex)
             {
@@ -340,5 +342,4 @@ namespace Inventory_Management
         }
     }
 }
-
 

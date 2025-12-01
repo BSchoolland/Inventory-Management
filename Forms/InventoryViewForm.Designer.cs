@@ -1,6 +1,6 @@
-namespace Inventory_Management
+namespace Inventory_Management.Forms
 {
-    partial class Form2
+    partial class InventoryViewForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -156,7 +156,7 @@ namespace Inventory_Management
             clearFiltersButton.UseVisualStyleBackColor = true;
             clearFiltersButton.Click += clearFiltersButton_Click;
             // 
-            // Form2
+            // InventoryViewForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -172,7 +172,7 @@ namespace Inventory_Management
             Controls.Add(buttonForward);
             Controls.Add(dataGridViewInventory);
             Controls.Add(clearFiltersButton);
-            Name = "Form2";
+            Name = "InventoryViewForm";
             Text = "View Inventory";
             Load += Form2_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridViewInventory).EndInit();

@@ -1,7 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Inventory_Management.Models;
 
-namespace Inventory_Management
+namespace Inventory_Management.Services
 {
     public static class InventoryStorage
     {
@@ -48,15 +49,5 @@ namespace Inventory_Management
             [JsonPropertyName("items")] public List<InventoryItem> Items { get; set; } = new();
         }
     }
-
-    public class InventoryItem
-    {
-        [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
-        [JsonPropertyName("description")] public string Description { get; set; } = string.Empty;
-        [JsonPropertyName("current_price")] public decimal CurrentPrice { get; set; }
-        [JsonPropertyName("stock_quantity")] public int StockQuantity { get; set; }
-        [JsonPropertyName("barcode")] public string Barcode { get; set; } = string.Empty;
-    }
 }
-
 

@@ -1,6 +1,7 @@
 using System.ComponentModel;
+using Inventory_Management.Models;
 
-namespace Inventory_Management
+namespace Inventory_Management.Services
 {
     /// <summary>
     /// Centralizes inventory management operations with binding support for UI controls.
@@ -11,7 +12,7 @@ namespace Inventory_Management
         private List<InventoryItem> _masterInventory = new();
         private BindingSource _bindingSource = new();
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged { add { } remove { } }
 
         public InventoryManager()
         {

@@ -1,20 +1,21 @@
 using System.Media;
+using Inventory_Management.Forms;
 
-namespace Inventory_Management
+namespace Inventory_Management.Forms
 {
-    public partial class Form1 : Form
+    public partial class OverviewForm : Form
     {
-        private Form2 form2;
-        private Form3 form3;
-        private Form4 form4;
+        private InventoryViewForm inventoryViewForm;
+        private ManageItemsForm manageItemsForm;
+        private AddStockForm addStockForm;
         private NavigationControl nav;
 
-        public Form1()
+        public OverviewForm()
         {
             InitializeComponent();
-            form2 = new Form2(this);
-            form3 = new Form3(this, form2);
-            form4 = new Form4(this, form2, form3);
+            inventoryViewForm = new InventoryViewForm(this);
+            manageItemsForm = new ManageItemsForm(this, inventoryViewForm);
+            addStockForm = new AddStockForm(this, inventoryViewForm, manageItemsForm);
             this.FormClosed += (s, e) => Application.Exit();
 
             nav = new NavigationControl(NavigationControl.NavigationPage.Overview);
@@ -22,10 +23,10 @@ namespace Inventory_Management
             Controls.Add(nav);
             
 
-            nav.OverviewClicked += (s, e) => button1_Click(s, e);
-            nav.ViewInventoryClicked += (s, e) => button2_Click(s, e);
-            nav.ManageItemsClicked += (s, e) => button4_Click(s, e);
-            nav.AddStockClicked += (s, e) => { form4.Show(); this.Hide(); };
+            nav.OverviewClicked += (s, e) => button1_Click(this, e);
+            nav.ViewInventoryClicked += (s, e) => button2_Click(this, e);
+            nav.ManageItemsClicked += (s, e) => button4_Click(this, e);
+            nav.AddStockClicked += (s, e) => { addStockForm.Show(); this.Hide(); };
             nav.ProjectionsClicked += (s, e) => SystemSounds.Beep.Play();
             nav.CheckoutClicked += (s, e) => SystemSounds.Beep.Play();
         }
@@ -48,8 +49,8 @@ namespace Inventory_Management
 
         private void button2_Click(object sender, EventArgs e)
         {
-            // Show Form2 and hide Form1
-            form2.Show();
+            // Show InventoryViewForm and hide OverviewForm
+            inventoryViewForm.Show();
             this.Hide();
         }
 
@@ -60,7 +61,7 @@ namespace Inventory_Management
 
         private void button4_Click(object sender, EventArgs e)
         {
-            form3.Show();
+            manageItemsForm.Show();
             this.Hide();
         }
 
@@ -70,3 +71,4 @@ namespace Inventory_Management
         }
     }
 }
+

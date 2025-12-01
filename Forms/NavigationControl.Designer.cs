@@ -1,4 +1,4 @@
-namespace Inventory_Management
+namespace Inventory_Management.Forms
 {
     partial class NavigationControl
     {

@@ -1,7 +1,7 @@
 using System.Media;
 using System.Drawing;
 
-namespace Inventory_Management
+namespace Inventory_Management.Forms
 {
     public partial class NavigationControl : UserControl
     {
@@ -103,5 +103,4 @@ namespace Inventory_Management
         private void checkoutButton_Click(object sender, EventArgs e) => CheckoutClicked?.Invoke(this, EventArgs.Empty);
     }
 }
-
 

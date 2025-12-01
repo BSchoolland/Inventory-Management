@@ -1,6 +1,6 @@
-namespace Inventory_Management
+namespace Inventory_Management.Forms
 {
-    partial class Form3
+    partial class ManageItemsForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -160,7 +160,7 @@ namespace Inventory_Management
             deleteSuggestionsListBox.Visible = false;
             deleteSuggestionsListBox.Click += deleteSuggestionsListBox_Click;
             // 
-            // Form3
+            // ManageItemsForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -178,7 +178,7 @@ namespace Inventory_Management
             Controls.Add(label2);
             Controls.Add(uploadButton);
             Controls.Add(label1);
-            Name = "Form3";
+            Name = "ManageItemsForm";
             Text = "Manage Items";
             Load += Form3_Load;
             ResumeLayout(false);

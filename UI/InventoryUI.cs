@@ -1,4 +1,4 @@
-namespace Inventory_Management
+namespace Inventory_Management.UI
 {
     public static class InventoryUI
     {
@@ -96,5 +96,4 @@ namespace Inventory_Management
         }
     }
 }
-
 
