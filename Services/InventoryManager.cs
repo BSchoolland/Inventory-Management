@@ -37,7 +37,7 @@ namespace Inventory_Management.Services
         {
             try
             {
-                _masterInventory = InventoryStorage.LoadItems();
+                _masterInventory = InventoryStorageSqlite.LoadItems();
                 _bindingSource.DataSource = new BindingSource(_masterInventory, null);
             }
             catch (Exception ex)
@@ -127,7 +127,7 @@ namespace Inventory_Management.Services
         {
             try
             {
-                InventoryStorage.SaveItems(_masterInventory);
+                InventoryStorageSqlite.SaveItems(_masterInventory);
             }
             catch (Exception ex)
             {

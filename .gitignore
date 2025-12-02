@@ -1,3 +1,8 @@
 .vs
 obj
 bin
+
+# Large stress test sample files
+data/sample_items_1000.txt
+data/sample_items_10000.txt
+data/sample_items_100000.txt

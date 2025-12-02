@@ -75,8 +75,7 @@ namespace Inventory_Management.Forms
                     return;
                 }
 
-                InventoryStorage.EnsureDataFile();
-                var items = InventoryStorage.LoadItems();
+                var items = InventoryStorageSqlite.LoadItems();
 
                 int added = 0, updated = 0, skipped = 0, errors = 0;
                 var bulkChoice = UpdateDecision.AskEach;
@@ -132,7 +131,7 @@ namespace Inventory_Management.Forms
                     }
                 }
 
-                InventoryStorage.SaveItems(items);
+                InventoryStorageSqlite.SaveItems(items);
                 MessageBox.Show($"Added: {added}\nUpdated: {updated}\nSkipped: {skipped}\nErrors: {errors}", "Upload Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 RefreshItemNames();
                 UpdateDeleteUIState();
@@ -154,7 +153,7 @@ namespace Inventory_Management.Forms
         {
             try
             {
-                var items = InventoryStorage.LoadItems();
+                var items = InventoryStorageSqlite.LoadItems();
                 var name = deleteNameTextBox.Text.Trim();
                 if (string.IsNullOrWhiteSpace(name))
                 {
@@ -162,11 +161,15 @@ namespace Inventory_Management.Forms
                     return;
                 }
 
-                var removed = items.RemoveAll(i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase));
-                if (removed > 0)
+                var toRemove = items.Where(i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase)).ToList();
+                foreach (var item in toRemove)
                 {
-                    InventoryStorage.SaveItems(items);
-                    MessageBox.Show($"Deleted {removed} item(s) named '{name}'.");
+                    InventoryStorageSqlite.DeleteItem(item);
+                }
+
+                if (toRemove.Count > 0)
+                {
+                    MessageBox.Show($"Deleted {toRemove.Count} item(s) named '{name}'.");
                     RefreshItemNames();
                     UpdateDeleteUIState();
                 }
@@ -185,15 +188,14 @@ namespace Inventory_Management.Forms
         {
             try
             {
-                InventoryStorage.EnsureDataFile();
-                var items = InventoryStorage.LoadItems();
-
                 string name = nameTextBox.Text.Trim();
                 if (string.IsNullOrWhiteSpace(name)) { MessageBox.Show("Name is required."); return; }
                 if (!decimal.TryParse(priceTextBox.Text.Trim(), out var price)) { MessageBox.Show("Invalid price."); return; }
                 if (!int.TryParse(qtyTextBox.Text.Trim(), out var qty)) { MessageBox.Show("Invalid quantity."); return; }
 
+                var items = InventoryStorageSqlite.LoadItems();
                 var existing = items.FirstOrDefault(i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase));
+                
                 if (existing != null)
                 {
                     var resp = MessageBox.Show($"'{name}' exists. Update price/quantity?", "Confirm Update", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -201,6 +203,7 @@ namespace Inventory_Management.Forms
                     {
                         existing.CurrentPrice = price;
                         existing.StockQuantity = qty;
+                        InventoryStorageSqlite.UpdateItem(existing);
                     }
                     else
                     {
@@ -210,17 +213,17 @@ namespace Inventory_Management.Forms
                 }
                 else
                 {
-                    items.Add(new InventoryItem
+                    var newItem = new InventoryItem
                     {
                         Name = name,
                         Description = string.Empty,
                         CurrentPrice = price,
                         StockQuantity = qty,
                         Barcode = string.Empty
-                    });
+                    };
+                    InventoryStorageSqlite.AddItem(newItem);
                 }
 
-                InventoryStorage.SaveItems(items);
                 MessageBox.Show("Item saved.");
                 RefreshItemNames();
                 UpdateDeleteUIState();
@@ -271,7 +274,7 @@ namespace Inventory_Management.Forms
         {
             try
             {
-                var list = InventoryStorage.LoadItems().Select(i => i.Name).Where(n => !string.IsNullOrWhiteSpace(n)).ToList();
+                var list = InventoryStorageSqlite.LoadItems().Select(i => i.Name).Where(n => !string.IsNullOrWhiteSpace(n)).ToList();
                 cachedItemNames = list;
             }
             catch
