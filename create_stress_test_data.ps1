@@ -6,24 +6,57 @@ if (-not (Test-Path $dataDir)) {
     New-Item -ItemType Directory -Path $dataDir | Out-Null
 }
 
-# Sample item templates for variety
-$itemTemplates = @(
-    @{ name = "Great Value Whole Milk"; basePrice = 3.28; baseQty = 120 },
-    @{ name = "Wonder Classic White Bread"; basePrice = 2.48; baseQty = 80 },
-    @{ name = "Lay's Classic Potato Chips"; basePrice = 4.29; baseQty = 60 },
-    @{ name = "Great Value Large Eggs"; basePrice = 2.29; baseQty = 150 },
-    @{ name = "Coca-Cola 12 Pack"; basePrice = 6.98; baseQty = 90 },
-    @{ name = "Bounty Paper Towels"; basePrice = 12.97; baseQty = 45 },
-    @{ name = "Charmin Ultra Soft Toilet Paper"; basePrice = 14.97; baseQty = 50 },
-    @{ name = "Hanes Mens T-Shirt 5-Pack"; basePrice = 17.84; baseQty = 35 },
-    @{ name = "George Mens Jeans"; basePrice = 19.97; baseQty = 40 },
-    @{ name = "Mainstays Bath Towel"; basePrice = 4.88; baseQty = 70 },
-    @{ name = "Ozark Trail Stainless Steel Tumbler"; basePrice = 9.94; baseQty = 55 },
-    @{ name = "Samsung 32-inch Smart TV"; basePrice = 158.00; baseQty = 12 },
-    @{ name = "Duracell AA Batteries"; basePrice = 14.24; baseQty = 65 },
-    @{ name = "Crayola Crayons 24 Count"; basePrice = 1.47; baseQty = 200 },
-    @{ name = "LEGO Classic Medium Brick Box"; basePrice = 34.76; baseQty = 25 }
-)
+# Load real product data from CSV file (sample every Nth row to avoid memory issues)
+$csvPath = "WMT_Grocery_202209.csv"
+if (-not (Test-Path $csvPath)) {
+    Write-Host "Error: CSV file '$csvPath' not found. Please ensure it's in the current directory."
+    exit 1
+}
+
+Write-Host "Loading product data from CSV (sampling)..."
+$itemTemplates = @()
+$lineNum = 0
+$samplingInterval = 100  # Sample every 100th row to keep memory usage low
+
+try {
+    $reader = [System.IO.StreamReader]::new($csvPath)
+    # Skip header
+    $reader.ReadLine() | Out-Null
+    
+    while (($line = $reader.ReadLine()) -ne $null) {
+        $lineNum++
+        
+        # Sample every Nth line
+        if ($lineNum % $samplingInterval -eq 0) {
+            $fields = $line -split '(?<!\\),'  # Split on commas not within quotes
+            # PRODUCT_NAME is field 8 (index 7), PRICE_CURRENT is field 11 (index 10)
+            if ($fields.Count -gt 10) {
+                $productName = $fields[7].Trim('"')
+                $priceStr = $fields[10].Trim('"')
+                
+                if ($productName -and $priceStr -match '^\d+(\.\d{2})?$') {
+                    $itemTemplates += @{
+                        name = $productName
+                        basePrice = [double]$priceStr
+                        baseQty = Get-Random -Minimum 20 -Maximum 150
+                    }
+                }
+            }
+        }
+    }
+    $reader.Dispose()
+    
+    Write-Host "Loaded $($itemTemplates.Count) products from CSV (sampled 1 per $samplingInterval rows)"
+}
+catch {
+    Write-Host "Error reading CSV file: $_"
+    exit 1
+}
+
+if ($itemTemplates.Count -eq 0) {
+    Write-Host "No valid product data found in CSV file."
+    exit 1
+}
 
 function GenerateTestFile {
     param([int]$itemCount, [string]$filename)
@@ -39,9 +72,9 @@ function GenerateTestFile {
     try {
         for ($i = 1; $i -le $itemCount; $i++) {
             $template = $itemTemplates[($i - 1) % $itemTemplates.Count]
-            $name = "$($template.name) #$i"
-            $price = [math]::Round($template.basePrice * (0.8 + (Get-Random -Minimum 0 -Maximum 200) / 100), 2)
-            $qty = $template.baseQty + (Get-Random -Minimum -20 -Maximum 50)
+            $name = $template.name
+            $price = [math]::Round($template.basePrice * (0.9 + (Get-Random -Minimum 0 -Maximum 20) / 100), 2)
+            $qty = $template.baseQty + (Get-Random -Minimum -10 -Maximum 30)
             
             $line = "$name, $price, $qty"
             $writer.WriteLine($line)

@@ -5,19 +5,36 @@ namespace Inventory_Management.Services
 {
     /// <summary>
     /// Centralizes inventory management operations with binding support for UI controls.
-    /// Maintains a master List<InventoryItem> that syncs with storage.
+    /// Supports pagination to efficiently handle large datasets.
     /// </summary>
     public class InventoryManager : INotifyPropertyChanged
     {
-        private List<InventoryItem> _masterInventory = new();
+        private List<InventoryItem> _currentPageInventory = new();
         private BindingSource _bindingSource = new();
+        private int _currentPage = 1;
+        private int _pageSize = 100;
+        private int _totalItems = 0;
+        private string _currentSearchTerm = string.Empty;
+        private bool _isInitialized = false;
 
         public event PropertyChangedEventHandler? PropertyChanged { add { } remove { } }
 
         public InventoryManager()
         {
-            _bindingSource.DataSource = _masterInventory;
-            LoadInventory();
+            _bindingSource.DataSource = _currentPageInventory;
+        }
+
+        /// <summary>
+        /// Initializes the inventory manager with data from the database.
+        /// Call this after the form is shown to avoid blocking the UI on startup.
+        /// </summary>
+        public void Initialize()
+        {
+            if (!_isInitialized)
+            {
+                _isInitialized = true;
+                LoadInventoryPage(1);
+            }
         }
 
         /// <summary>
@@ -26,24 +43,160 @@ namespace Inventory_Management.Services
         public BindingSource BindingSource => _bindingSource;
 
         /// <summary>
-        /// Gets the master inventory list.
+        /// Gets the current page inventory list.
         /// </summary>
-        public List<InventoryItem> MasterInventory => _masterInventory;
+        public List<InventoryItem> CurrentPageInventory => _currentPageInventory;
 
         /// <summary>
-        /// Loads inventory from storage into the master list.
+        /// Gets the current page number (1-based).
         /// </summary>
-        public void LoadInventory()
+        public int CurrentPage => _currentPage;
+
+        /// <summary>
+        /// Gets the page size.
+        /// </summary>
+        public int PageSize => _pageSize;
+
+        /// <summary>
+        /// Gets the total number of items in the database.
+        /// </summary>
+        public int TotalItems => _totalItems;
+
+        /// <summary>
+        /// Gets the total number of pages.
+        /// </summary>
+        public int TotalPages => _totalItems == 0 ? 1 : (int)Math.Ceiling((double)_totalItems / _pageSize);
+
+        /// <summary>
+        /// Loads inventory for the specified page.
+        /// </summary>
+        public void LoadInventoryPage(int pageNumber)
         {
             try
             {
-                _masterInventory = InventoryStorageSqlite.LoadItems();
-                _bindingSource.DataSource = new BindingSource(_masterInventory, null);
+                _currentPage = pageNumber;
+                _currentSearchTerm = string.Empty;
+                _totalItems = InventoryStorageSqlite.GetTotalItemCount();
+                _currentPageInventory = InventoryStorageSqlite.LoadItemsPaged(_currentPage, _pageSize);
+                RefreshBindingSource();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to load inventory: {ex.Message}", "Error", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Searches items by name and loads the first page of results.
+        /// </summary>
+        public void SearchItems(string searchTerm)
+        {
+            try
+            {
+                _currentSearchTerm = searchTerm;
+                _currentPage = 1;
+                _currentPageInventory = InventoryStorageSqlite.SearchItems(searchTerm, _currentPage, _pageSize, out _totalItems);
+                RefreshBindingSource();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Search failed: {ex.Message}", "Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Filters items by criteria and loads the first page of results.
+        /// </summary>
+        public void FilterItems(decimal? minPrice, decimal? maxPrice, int? minStock, int? maxStock)
+        {
+            try
+            {
+                _currentSearchTerm = string.Empty;
+                _currentPage = 1;
+                _currentPageInventory = InventoryStorageSqlite.FilterItems(minPrice, maxPrice, minStock, maxStock, _currentPage, _pageSize, out _totalItems);
+                RefreshBindingSource();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Filter failed: {ex.Message}", "Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Loads the next page of results.
+        /// </summary>
+        public bool NextPage()
+        {
+            if (_currentPage >= TotalPages)
+                return false;
+
+            LoadPageInternal(_currentPage + 1);
+            return true;
+        }
+
+        /// <summary>
+        /// Loads the previous page of results.
+        /// </summary>
+        public bool PreviousPage()
+        {
+            if (_currentPage <= 1)
+                return false;
+
+            LoadPageInternal(_currentPage - 1);
+            return true;
+        }
+
+        /// <summary>
+        /// Loads a specific page of results.
+        /// </summary>
+        public bool GoToPage(int pageNumber)
+        {
+            if (pageNumber < 1 || pageNumber > TotalPages)
+                return false;
+
+            LoadPageInternal(pageNumber);
+            return true;
+        }
+
+        private void LoadPageInternal(int pageNumber)
+        {
+            try
+            {
+                _currentPage = pageNumber;
+                
+                if (string.IsNullOrWhiteSpace(_currentSearchTerm))
+                {
+                    _currentPageInventory = InventoryStorageSqlite.LoadItemsPaged(_currentPage, _pageSize);
+                }
+                else
+                {
+                    _currentPageInventory = InventoryStorageSqlite.SearchItems(_currentSearchTerm, _currentPage, _pageSize, out _totalItems);
+                }
+                
+                RefreshBindingSource();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load page: {ex.Message}", "Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Gets item name suggestions for autocomplete.
+        /// </summary>
+        public List<string> GetItemNameSuggestions(string searchTerm, int limit = 5)
+        {
+            try
+            {
+                return InventoryStorageSqlite.GetItemNamesBySearchTerm(searchTerm, limit);
+            }
+            catch
+            {
+                return new List<string>();
             }
         }
 
@@ -72,13 +225,6 @@ namespace Inventory_Management.Services
                 return false;
             }
 
-            // Check if item already exists
-            if (_masterInventory.Any(i => string.Equals(i.Name, name.Trim(), StringComparison.OrdinalIgnoreCase)))
-            {
-                errorMsg = $"An item named '{name}' already exists.";
-                return false;
-            }
-
             var item = new InventoryItem
             {
                 Name = name.Trim(),
@@ -88,26 +234,65 @@ namespace Inventory_Management.Services
                 Barcode = barcode?.Trim() ?? string.Empty
             };
 
-            _masterInventory.Add(item);
-            _bindingSource.Add(item);
-            PersistInventory();
-            return true;
+            try
+            {
+                InventoryStorageSqlite.AddItem(item);
+                _totalItems++;
+                // Reload current page to show the new item if it belongs to current view
+                LoadPageInternal(_currentPage);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                errorMsg = $"Failed to add item: {ex.Message}";
+                return false;
+            }
         }
 
         /// <summary>
-        /// Increments stock quantity for an item by the specified amount.
+        /// Updates an item in the database.
+        /// </summary>
+        public bool TryUpdateItem(InventoryItem item, out string errorMsg)
+        {
+            errorMsg = string.Empty;
+
+            try
+            {
+                InventoryStorageSqlite.UpdateItem(item);
+                // Update in current page view
+                var existingItem = _currentPageInventory.FirstOrDefault(i => i.Id == item.Id);
+                if (existingItem != null)
+                {
+                    existingItem.Name = item.Name;
+                    existingItem.Description = item.Description;
+                    existingItem.CurrentPrice = item.CurrentPrice;
+                    existingItem.StockQuantity = item.StockQuantity;
+                    existingItem.Barcode = item.Barcode;
+                    _bindingSource.ResetBindings(false);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                errorMsg = $"Failed to update item: {ex.Message}";
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Increments stock quantity for an item on the current page.
         /// </summary>
         public bool TryIncrementStock(int rowIndex, int amount, out string errorMsg)
         {
             errorMsg = string.Empty;
 
-            if (rowIndex < 0 || rowIndex >= _masterInventory.Count)
+            if (rowIndex < 0 || rowIndex >= _currentPageInventory.Count)
             {
                 errorMsg = "Invalid row selection.";
                 return false;
             }
 
-            var item = _masterInventory[rowIndex];
+            var item = _currentPageInventory[rowIndex];
             if (item.StockQuantity + amount < 0)
             {
                 errorMsg = $"Cannot decrease stock. '{item.Name}' would drop below 0.";
@@ -115,34 +300,31 @@ namespace Inventory_Management.Services
             }
 
             item.StockQuantity += amount;
-            _bindingSource.ResetBindings(false);
-            PersistInventory();
-            return true;
-        }
-
-        /// <summary>
-        /// Persists the master inventory to storage.
-        /// </summary>
-        private void PersistInventory()
-        {
+            
             try
             {
-                InventoryStorageSqlite.SaveItems(_masterInventory);
+                InventoryStorageSqlite.UpdateItem(item);
+                _bindingSource.ResetBindings(false);
+                return true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to save inventory: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                errorMsg = $"Failed to update stock: {ex.Message}";
+                return false;
             }
         }
 
         /// <summary>
-        /// Refreshes the master inventory and rebinds the UI.
+        /// Refreshes the current page from the database.
         /// </summary>
         public void Refresh()
         {
-            LoadInventory();
+            LoadPageInternal(_currentPage);
+        }
+
+        private void RefreshBindingSource()
+        {
+            _bindingSource.DataSource = new BindingSource(_currentPageInventory, null);
         }
     }
 }
-

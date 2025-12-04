@@ -75,10 +75,19 @@ namespace Inventory_Management.Forms
                     return;
                 }
 
-                var items = InventoryStorageSqlite.LoadItems();
+                // Load all existing items ONCE instead of searching per item
+                var existingItems = InventoryStorageSqlite.LoadItems();
+                var existingDict = existingItems.ToDictionary(
+                    i => i.Name.ToLower(), 
+                    i => i, 
+                    StringComparer.OrdinalIgnoreCase
+                );
 
                 int added = 0, updated = 0, skipped = 0, errors = 0;
                 var bulkChoice = UpdateDecision.AskEach;
+                var itemsToAdd = new List<InventoryItem>();
+                var itemsToUpdate = new List<InventoryItem>();
+                
                 foreach (var raw in lines)
                 {
                     if (string.IsNullOrWhiteSpace(raw)) { continue; }
@@ -93,8 +102,8 @@ namespace Inventory_Management.Forms
                     if (!decimal.TryParse(parts[1].Trim(), out var price)) { errors++; continue; }
                     if (!int.TryParse(parts[2].Trim(), out var qty)) { errors++; continue; }
 
-                    var existing = items.FirstOrDefault(i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase));
-                    if (existing != null)
+                    // Check in dictionary instead of querying database
+                    if (existingDict.TryGetValue(name, out var existing))
                     {
                         UpdateDecision decision = bulkChoice;
                         if (decision == UpdateDecision.AskEach)
@@ -110,6 +119,7 @@ namespace Inventory_Management.Forms
                         {
                             existing.CurrentPrice = price;
                             existing.StockQuantity = qty;
+                            itemsToUpdate.Add(existing);
                             updated++;
                         }
                         else if (decision == UpdateDecision.Skip || decision == UpdateDecision.SkipAll)
@@ -119,19 +129,29 @@ namespace Inventory_Management.Forms
                     }
                     else
                     {
-                        items.Add(new InventoryItem
+                        var newItem = new InventoryItem
                         {
                             Name = name,
                             Description = string.Empty,
                             CurrentPrice = price,
                             StockQuantity = qty,
                             Barcode = string.Empty
-                        });
+                        };
+                        itemsToAdd.Add(newItem);
                         added++;
                     }
                 }
 
-                InventoryStorageSqlite.SaveItems(items);
+                // Batch insert/update all items
+                if (itemsToAdd.Count > 0)
+                {
+                    InventoryStorageSqlite.BulkAddItems(itemsToAdd);
+                }
+                if (itemsToUpdate.Count > 0)
+                {
+                    InventoryStorageSqlite.BulkUpdateItems(itemsToUpdate);
+                }
+
                 MessageBox.Show($"Added: {added}\nUpdated: {updated}\nSkipped: {skipped}\nErrors: {errors}", "Upload Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 RefreshItemNames();
                 UpdateDeleteUIState();
@@ -274,7 +294,9 @@ namespace Inventory_Management.Forms
         {
             try
             {
-                var list = InventoryStorageSqlite.LoadItems().Select(i => i.Name).Where(n => !string.IsNullOrWhiteSpace(n)).ToList();
+                // Load first page (100 items) for name suggestions
+                var firstPageItems = InventoryStorageSqlite.LoadItemsPaged(1, 100);
+                var list = firstPageItems.Select(i => i.Name).Where(n => !string.IsNullOrWhiteSpace(n)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
                 cachedItemNames = list;
             }
             catch

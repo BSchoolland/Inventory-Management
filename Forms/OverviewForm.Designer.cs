@@ -37,39 +37,43 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(393, 9);
+            label1.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
+            label1.Location = new Point(260, 20);
             label1.Name = "label1";
-            label1.Size = new Size(70, 20);
+            label1.Size = new Size(272, 37);
             label1.TabIndex = 1;
-            label1.Text = "Overview";
+            label1.Text = "Inventory Overview";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(356, 96);
+            label2.Font = new Font("Segoe UI", 10F);
+            label2.Location = new Point(260, 98);
             label2.Name = "label2";
-            label2.Size = new Size(141, 20);
+            label2.Size = new Size(199, 23);
             label2.TabIndex = 2;
-            label2.Text = "Info Would Go Here";
+            label2.Text = "Loading inventory stats...";
             label2.Click += label2_Click;
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(356, 245);
+            label3.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            label3.Location = new Point(260, 228);
             label3.Name = "label3";
-            label3.Size = new Size(135, 20);
+            label3.Size = new Size(179, 25);
             label3.TabIndex = 3;
-            label3.Text = "Suggested Actions:";
+            label3.Text = "Price && stock stats:";
             // 
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(302, 302);
+            label4.Font = new Font("Segoe UI", 10F);
+            label4.Location = new Point(260, 268);
             label4.Name = "label4";
-            label4.Size = new Size(238, 20);
+            label4.Size = new Size(199, 23);
             label4.TabIndex = 4;
-            label4.Text = "Suggested Actions Would Go Here";
+            label4.Text = "Loading inventory stats...";
             // 
             // OverviewForm
             // 

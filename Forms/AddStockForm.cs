@@ -10,7 +10,8 @@ namespace Inventory_Management.Forms
         private InventoryViewForm inventoryViewForm;
         private ManageItemsForm manageItemsForm;
         private InventoryManager inventoryManager;
-        private List<InventoryItem> filteredItems = new();
+        private Label? pageInfoLabel;
+        private System.Windows.Forms.Timer searchDebounceTimer;
 
         public AddStockForm(OverviewForm parentOverview, InventoryViewForm parentInventoryView, ManageItemsForm parentManageItems)
         {
@@ -23,6 +24,15 @@ namespace Inventory_Management.Forms
             inventoryManager = new InventoryManager();
             dataGridViewInventory.DataSource = inventoryManager.BindingSource;
             ConfigureDataGridViewColumns();
+
+            // Initialize search debounce timer
+            searchDebounceTimer = new System.Windows.Forms.Timer();
+            searchDebounceTimer.Interval = 750; // 0.75 seconds
+            searchDebounceTimer.Tick += (s, e) => 
+            {
+                searchDebounceTimer.Stop();
+                ApplyFilters();
+            };
 
             var nav = new NavigationControl(NavigationControl.NavigationPage.AddStock);
             nav.Location = new Point(0, 0);
@@ -48,22 +58,30 @@ namespace Inventory_Management.Forms
             // Clear any default columns
             dataGridViewInventory.Columns.Clear();
 
-            // Name column
+            // Name column - limited width with text wrapping
             dataGridViewInventory.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "Name",
                 DataPropertyName = "Name",
                 HeaderText = "Item Name",
-                Width = 150
+                Width = 200,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    WrapMode = DataGridViewTriState.True
+                }
             });
 
-            // Description column
+            // Description column - limited width with text wrapping
             dataGridViewInventory.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "Description",
                 DataPropertyName = "Description",
                 HeaderText = "Description",
-                Width = 120
+                Width = 200,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    WrapMode = DataGridViewTriState.True
+                }
             });
 
             // Price column - formatted as currency
@@ -104,13 +122,16 @@ namespace Inventory_Management.Forms
                 HeaderText = "Barcode",
                 Width = 120
             });
+
+            // Use fixed row height for wrapped text (don't auto-size to avoid performance issues)
+            dataGridViewInventory.RowTemplate.Height = 60;
         }
 
         private void ApplyFilters()
         {
             if (inventoryManager == null) return;
 
-            string search = searchTextBox.Text;
+            string search = searchTextBox.Text.Trim();
             bool priceMinBlank = string.IsNullOrWhiteSpace(priceMinUpDown.Text);
             bool priceMaxBlank = string.IsNullOrWhiteSpace(priceMaxUpDown.Text);
             bool stockMinBlank = string.IsNullOrWhiteSpace(stockMinUpDown.Text);
@@ -119,19 +140,28 @@ namespace Inventory_Management.Forms
             decimal? priceMax = priceMaxBlank ? null : priceMaxUpDown.Value;
             int? stockMin = stockMinBlank ? null : (int)stockMinUpDown.Value;
             int? stockMax = stockMaxBlank ? null : (int)stockMaxUpDown.Value;
-            filteredItems = InventoryFilters.Apply(inventoryManager.MasterInventory, search, priceMin, priceMax, stockMin, stockMax);
-            DisplayFilteredInventory();
-        }
 
-        private void DisplayFilteredInventory()
-        {
-            // Update DataGridView with filtered items
-            inventoryManager.BindingSource.DataSource = new BindingSource(filteredItems, null);
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                inventoryManager.SearchItems(search);
+            }
+            else if (priceMin.HasValue || priceMax.HasValue || stockMin.HasValue || stockMax.HasValue)
+            {
+                inventoryManager.FilterItems(priceMin, priceMax, stockMin, stockMax);
+            }
+            else
+            {
+                inventoryManager.LoadInventoryPage(1);
+            }
+
+            UpdatePageInfo();
         }
 
         private void searchTextBox_TextChanged(object sender, EventArgs e)
         {
-            ApplyFilters();
+            // Reset the debounce timer on each keystroke
+            searchDebounceTimer.Stop();
+            searchDebounceTimer.Start();
         }
 
         private void filter_ValueChanged(object sender, EventArgs e)
@@ -141,12 +171,37 @@ namespace Inventory_Management.Forms
 
         private void buttonForward_Click(object sender, EventArgs e)
         {
-            // Pagination removed - DataGridView displays all filtered items
+            if (inventoryManager.NextPage())
+            {
+                UpdatePageInfo();
+            }
         }
 
         private void buttonBackward_Click(object sender, EventArgs e)
         {
-            // Pagination removed - DataGridView displays all filtered items
+            if (inventoryManager.PreviousPage())
+            {
+                UpdatePageInfo();
+            }
+        }
+
+        private void UpdatePageInfo()
+        {
+            buttonBackward.Enabled = inventoryManager.CurrentPage > 1;
+            buttonForward.Enabled = inventoryManager.CurrentPage < inventoryManager.TotalPages;
+            
+            if (pageInfoLabel == null)
+            {
+                pageInfoLabel = new Label
+                {
+                    AutoSize = true,
+                    Font = new Font("Segoe UI", 9F),
+                    ForeColor = SystemColors.ControlText
+                };
+                Controls.Add(pageInfoLabel);
+            }
+
+            pageInfoLabel.Text = $"Page {inventoryManager.CurrentPage} of {inventoryManager.TotalPages} ({inventoryManager.TotalItems} items)";
         }
 
         private void clearFiltersButton_Click(object sender, EventArgs e)
@@ -163,7 +218,8 @@ namespace Inventory_Management.Forms
             stockMaxUpDown.Text = "";
             if (inventoryManager != null)
             {
-                ApplyFilters();
+                inventoryManager.LoadInventoryPage(1);
+                UpdatePageInfo();
             }
         }
 
@@ -185,7 +241,8 @@ namespace Inventory_Management.Forms
 
         private void Form4_Load(object sender, EventArgs e)
         {
-
+            // Initialize inventory manager after form is shown to avoid blocking UI on startup
+            inventoryManager.Initialize();
         }
 
         private void filter_TextChanged(object sender, EventArgs e)
@@ -198,7 +255,7 @@ namespace Inventory_Management.Forms
             try
             {
                 inventoryManager.Refresh();
-                ApplyFilters();
+                UpdatePageInfo();
             }
             catch { }
         }

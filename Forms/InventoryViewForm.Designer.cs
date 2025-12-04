@@ -39,6 +39,8 @@ namespace Inventory_Management.Forms
             priceLabel = new Label();
             stockLabel = new Label();
             clearFiltersButton = new Button();
+            label1 = new Label();
+            label2 = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridViewInventory).BeginInit();
             ((System.ComponentModel.ISupportInitialize)priceMinUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)priceMaxUpDown).BeginInit();
@@ -52,14 +54,15 @@ namespace Inventory_Management.Forms
             dataGridViewInventory.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewInventory.Location = new Point(160, 40);
             dataGridViewInventory.Name = "dataGridViewInventory";
-            dataGridViewInventory.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridViewInventory.Size = new Size(600, 463);
-            dataGridViewInventory.TabIndex = 10;
             dataGridViewInventory.ReadOnly = true;
+            dataGridViewInventory.RowHeadersWidth = 51;
+            dataGridViewInventory.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGridViewInventory.Size = new Size(1241, 463);
+            dataGridViewInventory.TabIndex = 10;
             // 
             // buttonForward
             // 
-            buttonForward.Location = new Point(674, 509);
+            buttonForward.Location = new Point(1361, 509);
             buttonForward.Name = "buttonForward";
             buttonForward.Size = new Size(40, 30);
             buttonForward.TabIndex = 11;
@@ -69,7 +72,7 @@ namespace Inventory_Management.Forms
             // 
             // buttonBackward
             // 
-            buttonBackward.Location = new Point(624, 509);
+            buttonBackward.Location = new Point(1311, 509);
             buttonBackward.Name = "buttonBackward";
             buttonBackward.Size = new Size(40, 30);
             buttonBackward.TabIndex = 12;
@@ -88,7 +91,7 @@ namespace Inventory_Management.Forms
             // 
             // priceMinUpDown
             // 
-            priceMinUpDown.Location = new Point(437, 7);
+            priceMinUpDown.Location = new Point(1109, 7);
             priceMinUpDown.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
             priceMinUpDown.Name = "priceMinUpDown";
             priceMinUpDown.Size = new Size(60, 27);
@@ -98,7 +101,7 @@ namespace Inventory_Management.Forms
             // 
             // priceMaxUpDown
             // 
-            priceMaxUpDown.Location = new Point(503, 7);
+            priceMaxUpDown.Location = new Point(1175, 7);
             priceMaxUpDown.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
             priceMaxUpDown.Name = "priceMaxUpDown";
             priceMaxUpDown.Size = new Size(60, 27);
@@ -109,7 +112,7 @@ namespace Inventory_Management.Forms
             // 
             // stockMinUpDown
             // 
-            stockMinUpDown.Location = new Point(644, 7);
+            stockMinUpDown.Location = new Point(1295, 7);
             stockMinUpDown.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
             stockMinUpDown.Name = "stockMinUpDown";
             stockMinUpDown.Size = new Size(50, 27);
@@ -119,7 +122,7 @@ namespace Inventory_Management.Forms
             // 
             // stockMaxUpDown
             // 
-            stockMaxUpDown.Location = new Point(700, 7);
+            stockMaxUpDown.Location = new Point(1351, 7);
             stockMaxUpDown.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
             stockMaxUpDown.Name = "stockMaxUpDown";
             stockMaxUpDown.Size = new Size(50, 27);
@@ -131,7 +134,7 @@ namespace Inventory_Management.Forms
             // priceLabel
             // 
             priceLabel.AutoSize = true;
-            priceLabel.Location = new Point(370, 10);
+            priceLabel.Location = new Point(1042, 10);
             priceLabel.Name = "priceLabel";
             priceLabel.Size = new Size(66, 20);
             priceLabel.TabIndex = 14;
@@ -140,7 +143,7 @@ namespace Inventory_Management.Forms
             // stockLabel
             // 
             stockLabel.AutoSize = true;
-            stockLabel.Location = new Point(590, 10);
+            stockLabel.Location = new Point(1241, 10);
             stockLabel.Name = "stockLabel";
             stockLabel.Size = new Size(48, 20);
             stockLabel.TabIndex = 17;
@@ -156,11 +159,32 @@ namespace Inventory_Management.Forms
             clearFiltersButton.UseVisualStyleBackColor = true;
             clearFiltersButton.Click += clearFiltersButton_Click;
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(286, 514);
+            label1.Name = "label1";
+            label1.Size = new Size(159, 20);
+            label1.TabIndex = 21;
+            label1.Text = "Showing: 10000/10000";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(1193, 514);
+            label2.Name = "label2";
+            label2.Size = new Size(83, 20);
+            label2.TabIndex = 22;
+            label2.Text = "Page 1/100";
+            label2.Click += label2_Click_1;
+            // 
             // InventoryViewForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(810, 556);
+            ClientSize = new Size(1518, 556);
+            Controls.Add(label2);
+            Controls.Add(label1);
             Controls.Add(stockMaxUpDown);
             Controls.Add(stockMinUpDown);
             Controls.Add(stockLabel);
@@ -196,5 +220,7 @@ namespace Inventory_Management.Forms
         private Label priceLabel;
         private Label stockLabel;
         private Button clearFiltersButton;
+        private Label label1;
+        private Label label2;
     }
 }
