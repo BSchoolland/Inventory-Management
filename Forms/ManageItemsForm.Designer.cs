@@ -54,12 +54,15 @@ namespace Inventory_Management.Forms
             // 
             // uploadButton
             // 
+            uploadButton.BackColor = Color.FromArgb(50, 50, 50);
+            uploadButton.FlatStyle = FlatStyle.Flat;
+            uploadButton.ForeColor = Color.White;
             uploadButton.Location = new Point(372, 101);
             uploadButton.Name = "uploadButton";
             uploadButton.Size = new Size(150, 30);
             uploadButton.TabIndex = 5;
             uploadButton.Text = "Upload Text File";
-            uploadButton.UseVisualStyleBackColor = true;
+            uploadButton.UseVisualStyleBackColor = false;
             uploadButton.Click += uploadButton_Click;
             // 
             // label2
@@ -83,6 +86,9 @@ namespace Inventory_Management.Forms
             // 
             // deleteNameTextBox
             // 
+            deleteNameTextBox.BackColor = Color.FromArgb(50, 50, 50);
+            deleteNameTextBox.BorderStyle = BorderStyle.FixedSingle;
+            deleteNameTextBox.ForeColor = Color.White;
             deleteNameTextBox.Location = new Point(935, 172);
             deleteNameTextBox.Name = "deleteNameTextBox";
             deleteNameTextBox.Size = new Size(200, 27);
@@ -91,12 +97,15 @@ namespace Inventory_Management.Forms
             // 
             // deleteButton
             // 
+            deleteButton.BackColor = Color.FromArgb(50, 50, 50);
+            deleteButton.FlatStyle = FlatStyle.Flat;
+            deleteButton.ForeColor = Color.White;
             deleteButton.Location = new Point(1141, 171);
             deleteButton.Name = "deleteButton";
             deleteButton.Size = new Size(94, 29);
             deleteButton.TabIndex = 9;
             deleteButton.Text = "Delete";
-            deleteButton.UseVisualStyleBackColor = true;
+            deleteButton.UseVisualStyleBackColor = false;
             deleteButton.Click += deleteButton_Click;
             // 
             // label3
@@ -110,6 +119,9 @@ namespace Inventory_Management.Forms
             // 
             // deleteSuggestionsListBox
             // 
+            deleteSuggestionsListBox.BackColor = Color.FromArgb(50, 50, 50);
+            deleteSuggestionsListBox.BorderStyle = BorderStyle.FixedSingle;
+            deleteSuggestionsListBox.ForeColor = Color.White;
             deleteSuggestionsListBox.Location = new Point(935, 202);
             deleteSuggestionsListBox.Name = "deleteSuggestionsListBox";
             deleteSuggestionsListBox.Size = new Size(300, 84);
@@ -119,16 +131,22 @@ namespace Inventory_Management.Forms
             // 
             // addManualButton
             // 
+            addManualButton.BackColor = Color.FromArgb(50, 50, 50);
+            addManualButton.FlatStyle = FlatStyle.Flat;
+            addManualButton.ForeColor = Color.White;
             addManualButton.Location = new Point(1263, 56);
             addManualButton.Name = "addManualButton";
             addManualButton.Size = new Size(94, 29);
             addManualButton.TabIndex = 14;
             addManualButton.Text = "Add";
-            addManualButton.UseVisualStyleBackColor = true;
+            addManualButton.UseVisualStyleBackColor = false;
             addManualButton.Click += addManualButton_Click;
             // 
             // qtyTextBox
             // 
+            qtyTextBox.BackColor = Color.FromArgb(50, 50, 50);
+            qtyTextBox.BorderStyle = BorderStyle.FixedSingle;
+            qtyTextBox.ForeColor = Color.White;
             qtyTextBox.Location = new Point(1197, 57);
             qtyTextBox.Name = "qtyTextBox";
             qtyTextBox.PlaceholderText = "Qty";
@@ -137,6 +155,9 @@ namespace Inventory_Management.Forms
             // 
             // priceTextBox
             // 
+            priceTextBox.BackColor = Color.FromArgb(50, 50, 50);
+            priceTextBox.BorderStyle = BorderStyle.FixedSingle;
+            priceTextBox.ForeColor = Color.White;
             priceTextBox.Location = new Point(1091, 57);
             priceTextBox.Name = "priceTextBox";
             priceTextBox.PlaceholderText = "Price";
@@ -145,6 +166,9 @@ namespace Inventory_Management.Forms
             // 
             // nameTextBox
             // 
+            nameTextBox.BackColor = Color.FromArgb(50, 50, 50);
+            nameTextBox.BorderStyle = BorderStyle.FixedSingle;
+            nameTextBox.ForeColor = Color.White;
             nameTextBox.Location = new Point(935, 57);
             nameTextBox.Name = "nameTextBox";
             nameTextBox.PlaceholderText = "Name";
@@ -164,6 +188,7 @@ namespace Inventory_Management.Forms
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(34, 34, 34);
             ClientSize = new Size(768, 450);
             Controls.Add(deleteSuggestionsListBox);
             Controls.Add(label3);
@@ -178,6 +203,7 @@ namespace Inventory_Management.Forms
             Controls.Add(label2);
             Controls.Add(uploadButton);
             Controls.Add(label1);
+            ForeColor = Color.White;
             Name = "ManageItemsForm";
             Text = "Manage Items";
             Load += Form3_Load;

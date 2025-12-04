@@ -79,26 +79,35 @@ namespace Inventory_Management.Forms
             // 
             // buttonForward
             // 
+            buttonForward.BackColor = Color.FromArgb(50, 50, 50);
+            buttonForward.FlatStyle = FlatStyle.Flat;
+            buttonForward.ForeColor = Color.White;
             buttonForward.Location = new Point(997, 351);
             buttonForward.Name = "buttonForward";
             buttonForward.Size = new Size(40, 30);
             buttonForward.TabIndex = 11;
             buttonForward.Text = ">";
-            buttonForward.UseVisualStyleBackColor = true;
+            buttonForward.UseVisualStyleBackColor = false;
             buttonForward.Click += buttonForward_Click;
             // 
             // buttonBackward
             // 
+            buttonBackward.BackColor = Color.FromArgb(50, 50, 50);
+            buttonBackward.FlatStyle = FlatStyle.Flat;
+            buttonBackward.ForeColor = Color.White;
             buttonBackward.Location = new Point(947, 351);
             buttonBackward.Name = "buttonBackward";
             buttonBackward.Size = new Size(40, 30);
             buttonBackward.TabIndex = 12;
             buttonBackward.Text = "<";
-            buttonBackward.UseVisualStyleBackColor = true;
+            buttonBackward.UseVisualStyleBackColor = false;
             buttonBackward.Click += buttonBackward_Click;
             // 
             // searchTextBox
             // 
+            searchTextBox.BackColor = Color.FromArgb(50, 50, 50);
+            searchTextBox.BorderStyle = BorderStyle.FixedSingle;
+            searchTextBox.ForeColor = Color.White;
             searchTextBox.Location = new Point(160, 10);
             searchTextBox.Name = "searchTextBox";
             searchTextBox.PlaceholderText = "Search by name...";
@@ -108,6 +117,8 @@ namespace Inventory_Management.Forms
             // 
             // priceMinUpDown
             // 
+            priceMinUpDown.BackColor = Color.FromArgb(50, 50, 50);
+            priceMinUpDown.ForeColor = Color.White;
             priceMinUpDown.Location = new Point(437, 7);
             priceMinUpDown.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
             priceMinUpDown.Name = "priceMinUpDown";
@@ -118,6 +129,8 @@ namespace Inventory_Management.Forms
             // 
             // priceMaxUpDown
             // 
+            priceMaxUpDown.BackColor = Color.FromArgb(50, 50, 50);
+            priceMaxUpDown.ForeColor = Color.White;
             priceMaxUpDown.Location = new Point(503, 7);
             priceMaxUpDown.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
             priceMaxUpDown.Name = "priceMaxUpDown";
@@ -129,6 +142,8 @@ namespace Inventory_Management.Forms
             // 
             // stockMinUpDown
             // 
+            stockMinUpDown.BackColor = Color.FromArgb(50, 50, 50);
+            stockMinUpDown.ForeColor = Color.White;
             stockMinUpDown.Location = new Point(644, 7);
             stockMinUpDown.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
             stockMinUpDown.Name = "stockMinUpDown";
@@ -139,6 +154,8 @@ namespace Inventory_Management.Forms
             // 
             // stockMaxUpDown
             // 
+            stockMaxUpDown.BackColor = Color.FromArgb(50, 50, 50);
+            stockMaxUpDown.ForeColor = Color.White;
             stockMaxUpDown.Location = new Point(700, 7);
             stockMaxUpDown.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
             stockMaxUpDown.Name = "stockMaxUpDown";
@@ -168,12 +185,15 @@ namespace Inventory_Management.Forms
             // 
             // clearFiltersButton
             // 
+            clearFiltersButton.BackColor = Color.FromArgb(50, 50, 50);
+            clearFiltersButton.FlatStyle = FlatStyle.Flat;
+            clearFiltersButton.ForeColor = Color.White;
             clearFiltersButton.Location = new Point(160, 346);
             clearFiltersButton.Name = "clearFiltersButton";
             clearFiltersButton.Size = new Size(120, 30);
             clearFiltersButton.TabIndex = 20;
             clearFiltersButton.Text = "Clear Filters";
-            clearFiltersButton.UseVisualStyleBackColor = true;
+            clearFiltersButton.UseVisualStyleBackColor = false;
             clearFiltersButton.Click += clearFiltersButton_Click;
             // 
             // itemCountLabel
@@ -205,6 +225,7 @@ namespace Inventory_Management.Forms
             addItemGroupBox.Controls.Add(qtyLabel);
             addItemGroupBox.Controls.Add(qtyTextBox);
             addItemGroupBox.Controls.Add(addButton);
+            addItemGroupBox.ForeColor = Color.White;
             addItemGroupBox.Location = new Point(160, 390);
             addItemGroupBox.Name = "addItemGroupBox";
             addItemGroupBox.Size = new Size(499, 150);
@@ -223,6 +244,9 @@ namespace Inventory_Management.Forms
             // 
             // nameTextBox
             // 
+            nameTextBox.BackColor = Color.FromArgb(50, 50, 50);
+            nameTextBox.BorderStyle = BorderStyle.FixedSingle;
+            nameTextBox.ForeColor = Color.White;
             nameTextBox.Location = new Point(101, 22);
             nameTextBox.Name = "nameTextBox";
             nameTextBox.PlaceholderText = "Item name";
@@ -240,6 +264,9 @@ namespace Inventory_Management.Forms
             // 
             // descriptionTextBox
             // 
+            descriptionTextBox.BackColor = Color.FromArgb(50, 50, 50);
+            descriptionTextBox.BorderStyle = BorderStyle.FixedSingle;
+            descriptionTextBox.ForeColor = Color.White;
             descriptionTextBox.Location = new Point(101, 58);
             descriptionTextBox.Name = "descriptionTextBox";
             descriptionTextBox.PlaceholderText = "Item description";
@@ -257,6 +284,9 @@ namespace Inventory_Management.Forms
             // 
             // priceTextBox
             // 
+            priceTextBox.BackColor = Color.FromArgb(50, 50, 50);
+            priceTextBox.BorderStyle = BorderStyle.FixedSingle;
+            priceTextBox.ForeColor = Color.White;
             priceTextBox.Location = new Point(101, 96);
             priceTextBox.Name = "priceTextBox";
             priceTextBox.PlaceholderText = "0.00";
@@ -274,6 +304,9 @@ namespace Inventory_Management.Forms
             // 
             // qtyTextBox
             // 
+            qtyTextBox.BackColor = Color.FromArgb(50, 50, 50);
+            qtyTextBox.BorderStyle = BorderStyle.FixedSingle;
+            qtyTextBox.ForeColor = Color.White;
             qtyTextBox.Location = new Point(230, 96);
             qtyTextBox.Name = "qtyTextBox";
             qtyTextBox.PlaceholderText = "0";
@@ -282,12 +315,15 @@ namespace Inventory_Management.Forms
             // 
             // addButton
             // 
+            addButton.BackColor = Color.FromArgb(50, 50, 50);
+            addButton.FlatStyle = FlatStyle.Flat;
+            addButton.ForeColor = Color.White;
             addButton.Location = new Point(335, 110);
             addButton.Name = "addButton";
             addButton.Size = new Size(100, 29);
             addButton.TabIndex = 8;
             addButton.Text = "Add Item";
-            addButton.UseVisualStyleBackColor = true;
+            addButton.UseVisualStyleBackColor = false;
             addButton.Click += addButton_Click;
             // 
             // stockAdjustGroupBox
@@ -296,6 +332,7 @@ namespace Inventory_Management.Forms
             stockAdjustGroupBox.Controls.Add(decButton);
             stockAdjustGroupBox.Controls.Add(incQtyLabel);
             stockAdjustGroupBox.Controls.Add(incQtyTextBox);
+            stockAdjustGroupBox.ForeColor = Color.White;
             stockAdjustGroupBox.Location = new Point(665, 390);
             stockAdjustGroupBox.Name = "stockAdjustGroupBox";
             stockAdjustGroupBox.Size = new Size(372, 90);
@@ -305,22 +342,28 @@ namespace Inventory_Management.Forms
             // 
             // incButton
             // 
+            incButton.BackColor = Color.FromArgb(50, 50, 50);
+            incButton.FlatStyle = FlatStyle.Flat;
+            incButton.ForeColor = Color.White;
             incButton.Location = new Point(15, 45);
             incButton.Name = "incButton";
             incButton.Size = new Size(85, 29);
             incButton.TabIndex = 0;
             incButton.Text = "Increment";
-            incButton.UseVisualStyleBackColor = true;
+            incButton.UseVisualStyleBackColor = false;
             incButton.Click += incButton_Click;
             // 
             // decButton
             // 
+            decButton.BackColor = Color.FromArgb(50, 50, 50);
+            decButton.FlatStyle = FlatStyle.Flat;
+            decButton.ForeColor = Color.White;
             decButton.Location = new Point(106, 45);
             decButton.Name = "decButton";
             decButton.Size = new Size(90, 29);
             decButton.TabIndex = 1;
             decButton.Text = "Decrement";
-            decButton.UseVisualStyleBackColor = true;
+            decButton.UseVisualStyleBackColor = false;
             decButton.Click += decButton_Click;
             // 
             // incQtyLabel
@@ -334,6 +377,9 @@ namespace Inventory_Management.Forms
             // 
             // incQtyTextBox
             // 
+            incQtyTextBox.BackColor = Color.FromArgb(50, 50, 50);
+            incQtyTextBox.BorderStyle = BorderStyle.FixedSingle;
+            incQtyTextBox.ForeColor = Color.White;
             incQtyTextBox.Location = new Point(316, 46);
             incQtyTextBox.Name = "incQtyTextBox";
             incQtyTextBox.PlaceholderText = "1";
@@ -345,6 +391,7 @@ namespace Inventory_Management.Forms
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(34, 34, 34);
             ClientSize = new Size(1047, 590);
             Controls.Add(stockAdjustGroupBox);
             Controls.Add(addItemGroupBox);
@@ -361,6 +408,7 @@ namespace Inventory_Management.Forms
             Controls.Add(buttonBackward);
             Controls.Add(buttonForward);
             Controls.Add(dataGridViewInventory);
+            ForeColor = Color.White;
             Name = "ManageInventoryForm";
             Text = "Manage Inventory";
             Load += ManageInventoryForm_Load;

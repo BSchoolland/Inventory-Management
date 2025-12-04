@@ -53,6 +53,28 @@ namespace Inventory_Management.Forms
             // Initialize filters after inventoryManager is ready
             ClearFilters();
             this.Activated += (s, e) => RefreshFromStorage();
+            ApplyTheme();
+        }
+
+        private void ApplyTheme()
+        {
+            dataGridViewInventory.BackgroundColor = Color.FromArgb(50, 50, 50);
+            dataGridViewInventory.GridColor = Color.FromArgb(70, 70, 70);
+            dataGridViewInventory.EnableHeadersVisualStyles = false;
+
+            var headerStyle = new DataGridViewCellStyle();
+            headerStyle.BackColor = Color.FromArgb(40, 40, 40);
+            headerStyle.ForeColor = Color.White;
+            headerStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            dataGridViewInventory.ColumnHeadersDefaultCellStyle = headerStyle;
+
+            var defaultStyle = new DataGridViewCellStyle();
+            defaultStyle.BackColor = Color.FromArgb(50, 50, 50);
+            defaultStyle.ForeColor = Color.White;
+            defaultStyle.SelectionBackColor = Color.FromArgb(0, 122, 204);
+            defaultStyle.SelectionForeColor = Color.White;
+            dataGridViewInventory.DefaultCellStyle = defaultStyle;
+            dataGridViewInventory.RowHeadersDefaultCellStyle = defaultStyle;
         }
 
         /// <summary>
@@ -78,59 +100,57 @@ namespace Inventory_Management.Forms
             // Disable auto-generation of columns - only show explicitly defined columns
             dataGridViewInventory.AutoGenerateColumns = false;
 
+            var baseStyle = new DataGridViewCellStyle
+            {
+                BackColor = Color.FromArgb(50, 50, 50),
+                ForeColor = Color.White,
+                SelectionBackColor = Color.FromArgb(0, 122, 204),
+                SelectionForeColor = Color.White
+            };
+
             // Name column - limited width with text wrapping
+            var nameStyle = new DataGridViewCellStyle(baseStyle) { WrapMode = DataGridViewTriState.True };
             dataGridViewInventory.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "Name",
                 DataPropertyName = "Name",
                 HeaderText = "Item Name",
                 Width = 200,
-                DefaultCellStyle = new DataGridViewCellStyle
-                {
-                    WrapMode = DataGridViewTriState.True
-                }
+                DefaultCellStyle = nameStyle
             });
 
             // Description column - limited width with text wrapping
+            var descStyle = new DataGridViewCellStyle(baseStyle) { WrapMode = DataGridViewTriState.True };
             dataGridViewInventory.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "Description",
                 DataPropertyName = "Description",
                 HeaderText = "Description",
                 Width = 200,
-                DefaultCellStyle = new DataGridViewCellStyle
-                {
-                    WrapMode = DataGridViewTriState.True
-                }
+                DefaultCellStyle = descStyle
             });
 
             // Price column - formatted as currency
+            var priceStyle = new DataGridViewCellStyle(baseStyle) { Format = "c2", Alignment = DataGridViewContentAlignment.MiddleLeft };
             var priceColumn = new DataGridViewTextBoxColumn
             {
                 Name = "Price",
                 DataPropertyName = "CurrentPrice",
                 HeaderText = "Price",
                 Width = 100,
-                DefaultCellStyle = new DataGridViewCellStyle
-                {
-                    Format = "c2",
-                    Alignment = DataGridViewContentAlignment.MiddleLeft
-                }
+                DefaultCellStyle = priceStyle
             };
             dataGridViewInventory.Columns.Add(priceColumn);
 
             // Stock Quantity column - left-aligned with commas
+            var qtyStyle = new DataGridViewCellStyle(baseStyle) { Format = "N0", Alignment = DataGridViewContentAlignment.MiddleLeft };
             var quantityColumn = new DataGridViewTextBoxColumn
             {
                 Name = "StockQuantity",
                 DataPropertyName = "StockQuantity",
                 HeaderText = "Stock",
                 Width = 80,
-                DefaultCellStyle = new DataGridViewCellStyle
-                {
-                    Format = "N0",
-                    Alignment = DataGridViewContentAlignment.MiddleLeft
-                }
+                DefaultCellStyle = qtyStyle
             };
             dataGridViewInventory.Columns.Add(quantityColumn);
 

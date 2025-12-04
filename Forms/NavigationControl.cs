@@ -31,9 +31,6 @@ namespace Inventory_Management.Forms
             _manageInventoryDefaultColor = manageInventoryButton.BackColor;
             _manageItemsDefaultColor = manageItemsButton.BackColor;
 
-            // Ensure Overview's unselected color isn't blue by default
-            _overviewDefaultColor = SystemColors.Control;
-
             // Do not highlight any button unless the parent form sets the current page
             UpdateButtonStyles();
         }
@@ -55,18 +52,20 @@ namespace Inventory_Management.Forms
             overviewButton.BackColor = _overviewDefaultColor;
             manageInventoryButton.BackColor = _manageInventoryDefaultColor;
             manageItemsButton.BackColor = _manageItemsDefaultColor;
+            
+            Color activeColor = Color.FromArgb(0, 122, 204);
 
             // Highlight the selected one
             switch (_currentPage)
             {
                 case NavigationPage.Overview:
-                    overviewButton.BackColor = SystemColors.ActiveCaption;
+                    overviewButton.BackColor = activeColor;
                     break;
                 case NavigationPage.ManageInventory:
-                    manageInventoryButton.BackColor = SystemColors.ActiveCaption;
+                    manageInventoryButton.BackColor = activeColor;
                     break;
                 case NavigationPage.ManageItems:
-                    manageItemsButton.BackColor = SystemColors.ActiveCaption;
+                    manageItemsButton.BackColor = activeColor;
                     break;
             }
         }

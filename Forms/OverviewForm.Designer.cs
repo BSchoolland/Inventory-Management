@@ -79,11 +79,13 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(34, 34, 34);
             ClientSize = new Size(800, 450);
             Controls.Add(label4);
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
+            ForeColor = Color.White;
             Name = "OverviewForm";
             Text = "Overview";
             Load += Form1_Load;
