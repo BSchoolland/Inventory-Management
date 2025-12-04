@@ -4,49 +4,67 @@ using Inventory_Management.Models;
 
 namespace Inventory_Management.Forms
 {
-    public partial class InventoryViewForm : Form
+    public partial class ManageInventoryForm : Form
     {
         private OverviewForm overviewForm;
-        private ManageItemsForm manageItemsForm;
-        private AddStockForm addStockForm;
+        private ManageItemsForm? manageItemsForm;
         private InventoryManager inventoryManager;
         private System.Windows.Forms.Timer searchDebounceTimer;
+        private System.Windows.Forms.Timer filterDebounceTimer;
 
-        public InventoryViewForm(OverviewForm parentForm)
+        public ManageInventoryForm(OverviewForm parentOverview)
         {
-            overviewForm = parentForm;
-            InitializeComponent();
-            this.FormClosed += (s, e) => Application.Exit();
-            manageItemsForm = new ManageItemsForm(overviewForm, this);
-            addStockForm = new AddStockForm(overviewForm, this, manageItemsForm);
-
-            inventoryManager = new InventoryManager();
-            dataGridViewInventory.DataSource = inventoryManager.BindingSource;
-            ConfigureDataGridViewColumns();
-
+            overviewForm = parentOverview;
+            
+            // Initialize timers BEFORE InitializeComponent() to avoid null reference errors
             // Initialize search debounce timer
             searchDebounceTimer = new System.Windows.Forms.Timer();
             searchDebounceTimer.Interval = 750; // 0.75 seconds
-            searchDebounceTimer.Tick += (s, e) => 
+            searchDebounceTimer.Tick += (s, e) =>
             {
                 searchDebounceTimer.Stop();
                 ApplyFilters();
             };
 
-            var nav = new NavigationControl(NavigationControl.NavigationPage.ViewInventory);
+            // Initialize filter debounce timer
+            filterDebounceTimer = new System.Windows.Forms.Timer();
+            filterDebounceTimer.Interval = 750; // 0.75 seconds
+            filterDebounceTimer.Tick += (s, e) =>
+            {
+                filterDebounceTimer.Stop();
+                ApplyFilters();
+            };
+
+            InitializeComponent();
+            this.FormClosed += (s, e) => Application.Exit();
+
+            inventoryManager = new InventoryManager();
+            dataGridViewInventory.DataSource = inventoryManager.BindingSource;
+            ConfigureDataGridViewColumns();
+
+            var nav = new NavigationControl(NavigationControl.NavigationPage.ManageInventory);
             nav.Location = new Point(0, 0);
             Controls.Add(nav);
 
             nav.OverviewClicked += (s, e) => { overviewForm.Show(); this.Hide(); };
-            nav.ViewInventoryClicked += (s, e) => { SystemSounds.Hand.Play(); };
-            nav.ManageItemsClicked += (s, e) => { manageItemsForm.Show(); this.Hide(); };
-            nav.AddStockClicked += (s, e) => { addStockForm.Show(); this.Hide(); };
-            nav.ProjectionsClicked += (s, e) => SystemSounds.Beep.Play();
-            nav.CheckoutClicked += (s, e) => SystemSounds.Beep.Play();
+            nav.ManageInventoryClicked += (s, e) => { SystemSounds.Hand.Play(); };
+            nav.ManageItemsClicked += (s, e) => { EnsureManageItemsForm().Show(); this.Hide(); };
 
             // Initialize filters after inventoryManager is ready
             ClearFilters();
             this.Activated += (s, e) => RefreshFromStorage();
+        }
+
+        /// <summary>
+        /// Lazily initializes and returns the ManageItemsForm.
+        /// </summary>
+        private ManageItemsForm EnsureManageItemsForm()
+        {
+            if (manageItemsForm == null)
+            {
+                manageItemsForm = new ManageItemsForm(overviewForm, this);
+            }
+            return manageItemsForm;
         }
 
         /// <summary>
@@ -56,6 +74,9 @@ namespace Inventory_Management.Forms
         {
             // Clear any default columns
             dataGridViewInventory.Columns.Clear();
+            
+            // Disable auto-generation of columns - only show explicitly defined columns
+            dataGridViewInventory.AutoGenerateColumns = false;
 
             // Name column - limited width with text wrapping
             dataGridViewInventory.Columns.Add(new DataGridViewTextBoxColumn
@@ -113,16 +134,8 @@ namespace Inventory_Management.Forms
             };
             dataGridViewInventory.Columns.Add(quantityColumn);
 
-            // Barcode column
-            dataGridViewInventory.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "Barcode",
-                DataPropertyName = "Barcode",
-                HeaderText = "Barcode",
-                Width = 120
-            });
-
-            // Use fixed row height for wrapped text (don't auto-size to avoid performance issues)
+            // Enable auto-sizing for rows to accommodate wrapped text
+            dataGridViewInventory.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             dataGridViewInventory.RowTemplate.Height = 60;
         }
 
@@ -176,7 +189,9 @@ namespace Inventory_Management.Forms
 
         private void filter_ValueChanged(object sender, EventArgs e)
         {
-            ApplyFilters();
+            // Reset the debounce timer on each value change
+            filterDebounceTimer.Stop();
+            filterDebounceTimer.Start();
         }
 
         private void buttonForward_Click(object sender, EventArgs e)
@@ -200,8 +215,8 @@ namespace Inventory_Management.Forms
             buttonBackward.Enabled = inventoryManager.CurrentPage > 1;
             buttonForward.Enabled = inventoryManager.CurrentPage < inventoryManager.TotalPages;
 
-            label1.Text = $"Items: {inventoryManager.TotalItems}";
-            label2.Text = $"Page {inventoryManager.CurrentPage} of {inventoryManager.TotalPages}";
+            itemCountLabel.Text = $"Items: {inventoryManager.TotalItems}";
+            pageInfoLabel.Text = $"Page {inventoryManager.CurrentPage} of {inventoryManager.TotalPages}";
         }
 
         private void clearFiltersButton_Click(object sender, EventArgs e)
@@ -223,23 +238,7 @@ namespace Inventory_Management.Forms
             }
         }
 
-        private void groupBox1_Enter(object sender, EventArgs e) { }
-        private void label2_Click(object sender, EventArgs e) { }
-        private void button1_Click(object sender, EventArgs e) { }
-        private void button2_Click(object sender, EventArgs e) { }
-        private void button3_Click(object sender, EventArgs e) { }
-        private void button4_Click(object sender, EventArgs e)
-        {
-            manageItemsForm.Show();
-            this.Hide();
-        }
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-            overviewForm.Show();
-            this.Hide();
-        }
-
-        private void Form2_Load(object sender, EventArgs e)
+        private void ManageInventoryForm_Load(object sender, EventArgs e)
         {
             // Initialize inventory manager after form is shown to avoid blocking UI on startup
             inventoryManager.Initialize();
@@ -247,7 +246,9 @@ namespace Inventory_Management.Forms
 
         private void filter_TextChanged(object sender, EventArgs e)
         {
-            ApplyFilters();
+            // Reset the debounce timer on each text change
+            filterDebounceTimer.Stop();
+            filterDebounceTimer.Start();
         }
 
         private void RefreshFromStorage()
@@ -260,11 +261,110 @@ namespace Inventory_Management.Forms
             catch { }
         }
 
-        private void label2_Click_1(object sender, EventArgs e)
+        /// <summary>
+        /// Handles adding a new item to the inventory.
+        /// </summary>
+        private void addButton_Click(object sender, EventArgs e)
         {
+            // Validate and parse input
+            if (!decimal.TryParse(priceTextBox.Text, out var price))
+            {
+                MessageBox.Show("Invalid price format. Please enter a valid decimal number.", "Input Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                priceTextBox.Focus();
+                return;
+            }
 
+            if (!int.TryParse(qtyTextBox.Text, out var qty))
+            {
+                MessageBox.Show("Invalid quantity format. Please enter a valid integer.", "Input Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                qtyTextBox.Focus();
+                return;
+            }
+
+            // Attempt to add the item
+            if (inventoryManager.TryAddItem(nameTextBox.Text, descriptionTextBox.Text, price, qty, string.Empty, out var errorMsg))
+            {
+                MessageBox.Show($"Item '{nameTextBox.Text}' added successfully.", "Success",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // Clear form
+                nameTextBox.Clear();
+                descriptionTextBox.Clear();
+                priceTextBox.Clear();
+                qtyTextBox.Clear();
+                RefreshFromStorage();
+            }
+            else
+            {
+                MessageBox.Show($"Failed to add item: {errorMsg}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Increments the stock quantity of the selected item.
+        /// </summary>
+        private void incButton_Click(object sender, EventArgs e)
+        {
+            if (dataGridViewInventory.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select an item to increment.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!int.TryParse(incQtyTextBox.Text, out var amount))
+            {
+                MessageBox.Show("Invalid amount format. Please enter a valid integer.", "Input Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                incQtyTextBox.Focus();
+                return;
+            }
+
+            int rowIndex = dataGridViewInventory.SelectedRows[0].Index;
+            if (inventoryManager.TryIncrementStock(rowIndex, amount, out var errorMsg))
+            {
+                RefreshFromStorage();
+            }
+            else
+            {
+                MessageBox.Show($"Failed to increment stock: {errorMsg}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Decrements the stock quantity of the selected item.
+        /// </summary>
+        private void decButton_Click(object sender, EventArgs e)
+        {
+            if (dataGridViewInventory.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select an item to decrement.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!int.TryParse(incQtyTextBox.Text, out var amount))
+            {
+                MessageBox.Show("Invalid amount format. Please enter a valid integer.", "Input Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                incQtyTextBox.Focus();
+                return;
+            }
+
+            int rowIndex = dataGridViewInventory.SelectedRows[0].Index;
+            if (inventoryManager.TryIncrementStock(rowIndex, -amount, out var errorMsg))
+            {
+                RefreshFromStorage();
+            }
+            else
+            {
+                MessageBox.Show($"Failed to decrement stock: {errorMsg}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
-
 }
 

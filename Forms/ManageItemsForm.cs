@@ -8,30 +8,24 @@ namespace Inventory_Management.Forms
     public partial class ManageItemsForm : Form
     {
         private OverviewForm overviewForm;
-        private InventoryViewForm inventoryViewForm;
+        private ManageInventoryForm manageInventoryForm;
         private NavigationControl nav;
         private List<string> cachedItemNames = new();
-        private AddStockForm addStockForm;
 
-        public ManageItemsForm(OverviewForm parentOverview, InventoryViewForm parentInventoryView)
+        public ManageItemsForm(OverviewForm parentOverview, ManageInventoryForm parentInventoryView)
         {
             overviewForm = parentOverview;
-            inventoryViewForm = parentInventoryView;
+            manageInventoryForm = parentInventoryView;
             InitializeComponent();
             this.FormClosed += (s, e) => Application.Exit();
 
             nav = new NavigationControl(NavigationControl.NavigationPage.ManageItems);
             nav.Location = new Point(0, 0);
             Controls.Add(nav);
-            addStockForm = new AddStockForm(overviewForm, inventoryViewForm, this);
-
 
             nav.OverviewClicked += (s, e) => button1_Click(this, e);
-            nav.ViewInventoryClicked += (s, e) => button2_Click(this, e);
+            nav.ManageInventoryClicked += (s, e) => button2_Click(this, e);
             nav.ManageItemsClicked += (s, e) => button4_Click(this, e);
-            nav.AddStockClicked += (s, e) => { addStockForm.Show(); this.Hide(); };
-            nav.ProjectionsClicked += (s, e) => SystemSounds.Beep.Play();
-            nav.CheckoutClicked += (s, e) => SystemSounds.Beep.Play();
         }
 
         private void groupBox1_Enter(object sender, EventArgs e) { }
@@ -46,8 +40,8 @@ namespace Inventory_Management.Forms
 
         private void button2_Click(object sender, EventArgs e)
         {
-            // View Inventory -> go to InventoryViewForm
-            inventoryViewForm.Show();
+            // View Inventory -> go to ManageInventoryForm
+            manageInventoryForm.Show();
             this.Hide();
         }
 
@@ -55,7 +49,7 @@ namespace Inventory_Management.Forms
 
         private void button4_Click(object sender, EventArgs e)
         {
-            // Create Item -> already here
+            // Manage Items -> already here
             SystemSounds.Hand.Play();
         }
 
@@ -367,4 +361,3 @@ namespace Inventory_Management.Forms
         }
     }
 }
-

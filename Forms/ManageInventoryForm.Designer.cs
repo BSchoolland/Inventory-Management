@@ -1,6 +1,6 @@
 namespace Inventory_Management.Forms
 {
-    partial class AddStockForm
+    partial class ManageInventoryForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -39,6 +39,8 @@ namespace Inventory_Management.Forms
             priceLabel = new Label();
             stockLabel = new Label();
             clearFiltersButton = new Button();
+            itemCountLabel = new Label();
+            pageInfoLabel = new Label();
             addItemGroupBox = new GroupBox();
             nameLabel = new Label();
             nameTextBox = new TextBox();
@@ -48,9 +50,8 @@ namespace Inventory_Management.Forms
             priceTextBox = new TextBox();
             qtyLabel = new Label();
             qtyTextBox = new TextBox();
-            barcodeLabel = new Label();
-            barcodeTextBox = new TextBox();
             addButton = new Button();
+            stockAdjustGroupBox = new GroupBox();
             incButton = new Button();
             decButton = new Button();
             incQtyLabel = new Label();
@@ -61,40 +62,39 @@ namespace Inventory_Management.Forms
             ((System.ComponentModel.ISupportInitialize)stockMinUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)stockMaxUpDown).BeginInit();
             addItemGroupBox.SuspendLayout();
+            stockAdjustGroupBox.SuspendLayout();
             SuspendLayout();
             // 
             // dataGridViewInventory
             // 
             dataGridViewInventory.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             dataGridViewInventory.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewInventory.Location = new Point(160, 40);
+            dataGridViewInventory.Location = new Point(161, 40);
             dataGridViewInventory.Name = "dataGridViewInventory";
             dataGridViewInventory.ReadOnly = true;
             dataGridViewInventory.RowHeadersWidth = 51;
             dataGridViewInventory.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridViewInventory.Size = new Size(687, 250);
+            dataGridViewInventory.Size = new Size(779, 300);
             dataGridViewInventory.TabIndex = 10;
             // 
             // buttonForward
             // 
-            buttonForward.Location = new Point(758, 304);
+            buttonForward.Location = new Point(900, 346);
             buttonForward.Name = "buttonForward";
             buttonForward.Size = new Size(40, 30);
             buttonForward.TabIndex = 11;
             buttonForward.Text = ">";
             buttonForward.UseVisualStyleBackColor = true;
-            buttonForward.Visible = false;
             buttonForward.Click += buttonForward_Click;
             // 
             // buttonBackward
             // 
-            buttonBackward.Location = new Point(700, 304);
+            buttonBackward.Location = new Point(850, 346);
             buttonBackward.Name = "buttonBackward";
             buttonBackward.Size = new Size(40, 30);
             buttonBackward.TabIndex = 12;
             buttonBackward.Text = "<";
             buttonBackward.UseVisualStyleBackColor = true;
-            buttonBackward.Visible = false;
             buttonBackward.Click += buttonBackward_Click;
             // 
             // searchTextBox
@@ -168,13 +168,31 @@ namespace Inventory_Management.Forms
             // 
             // clearFiltersButton
             // 
-            clearFiltersButton.Location = new Point(160, 304);
+            clearFiltersButton.Location = new Point(160, 346);
             clearFiltersButton.Name = "clearFiltersButton";
             clearFiltersButton.Size = new Size(120, 30);
             clearFiltersButton.TabIndex = 20;
             clearFiltersButton.Text = "Clear Filters";
             clearFiltersButton.UseVisualStyleBackColor = true;
             clearFiltersButton.Click += clearFiltersButton_Click;
+            // 
+            // itemCountLabel
+            // 
+            itemCountLabel.AutoSize = true;
+            itemCountLabel.Location = new Point(286, 351);
+            itemCountLabel.Name = "itemCountLabel";
+            itemCountLabel.Size = new Size(159, 20);
+            itemCountLabel.TabIndex = 21;
+            itemCountLabel.Text = "Showing: 10000/10000";
+            // 
+            // pageInfoLabel
+            // 
+            pageInfoLabel.AutoSize = true;
+            pageInfoLabel.Location = new Point(719, 351);
+            pageInfoLabel.Name = "pageInfoLabel";
+            pageInfoLabel.Size = new Size(83, 20);
+            pageInfoLabel.TabIndex = 22;
+            pageInfoLabel.Text = "Page 1/100";
             // 
             // addItemGroupBox
             // 
@@ -186,13 +204,11 @@ namespace Inventory_Management.Forms
             addItemGroupBox.Controls.Add(priceTextBox);
             addItemGroupBox.Controls.Add(qtyLabel);
             addItemGroupBox.Controls.Add(qtyTextBox);
-            addItemGroupBox.Controls.Add(barcodeLabel);
-            addItemGroupBox.Controls.Add(barcodeTextBox);
             addItemGroupBox.Controls.Add(addButton);
-            addItemGroupBox.Location = new Point(159, 400);
+            addItemGroupBox.Location = new Point(160, 390);
             addItemGroupBox.Name = "addItemGroupBox";
-            addItemGroupBox.Size = new Size(600, 187);
-            addItemGroupBox.TabIndex = 21;
+            addItemGroupBox.Size = new Size(450, 150);
+            addItemGroupBox.TabIndex = 23;
             addItemGroupBox.TabStop = false;
             addItemGroupBox.Text = "Add New Item";
             // 
@@ -264,49 +280,45 @@ namespace Inventory_Management.Forms
             qtyTextBox.Size = new Size(60, 27);
             qtyTextBox.TabIndex = 7;
             // 
-            // barcodeLabel
-            // 
-            barcodeLabel.AutoSize = true;
-            barcodeLabel.Location = new Point(10, 138);
-            barcodeLabel.Name = "barcodeLabel";
-            barcodeLabel.Size = new Size(67, 20);
-            barcodeLabel.TabIndex = 8;
-            barcodeLabel.Text = "Barcode:";
-            // 
-            // barcodeTextBox
-            // 
-            barcodeTextBox.Location = new Point(100, 135);
-            barcodeTextBox.Name = "barcodeTextBox";
-            barcodeTextBox.PlaceholderText = "Barcode";
-            barcodeTextBox.Size = new Size(180, 27);
-            barcodeTextBox.TabIndex = 9;
-            // 
             // addButton
             // 
-            addButton.Location = new Point(485, 150);
+            addButton.Location = new Point(335, 110);
             addButton.Name = "addButton";
             addButton.Size = new Size(100, 29);
-            addButton.TabIndex = 10;
+            addButton.TabIndex = 8;
             addButton.Text = "Add Item";
             addButton.UseVisualStyleBackColor = true;
             addButton.Click += addButton_Click;
             // 
+            // stockAdjustGroupBox
+            // 
+            stockAdjustGroupBox.Controls.Add(incButton);
+            stockAdjustGroupBox.Controls.Add(decButton);
+            stockAdjustGroupBox.Controls.Add(incQtyLabel);
+            stockAdjustGroupBox.Controls.Add(incQtyTextBox);
+            stockAdjustGroupBox.Location = new Point(630, 390);
+            stockAdjustGroupBox.Name = "stockAdjustGroupBox";
+            stockAdjustGroupBox.Size = new Size(310, 90);
+            stockAdjustGroupBox.TabIndex = 24;
+            stockAdjustGroupBox.TabStop = false;
+            stockAdjustGroupBox.Text = "Adjust Stock (select item above)";
+            // 
             // incButton
             // 
-            incButton.Location = new Point(162, 352);
+            incButton.Location = new Point(15, 45);
             incButton.Name = "incButton";
-            incButton.Size = new Size(98, 29);
-            incButton.TabIndex = 21;
+            incButton.Size = new Size(85, 29);
+            incButton.TabIndex = 0;
             incButton.Text = "Increment";
             incButton.UseVisualStyleBackColor = true;
             incButton.Click += incButton_Click;
             // 
             // decButton
             // 
-            decButton.Location = new Point(266, 353);
+            decButton.Location = new Point(106, 45);
             decButton.Name = "decButton";
-            decButton.Size = new Size(105, 29);
-            decButton.TabIndex = 22;
+            decButton.Size = new Size(90, 29);
+            decButton.TabIndex = 1;
             decButton.Text = "Decrement";
             decButton.UseVisualStyleBackColor = true;
             decButton.Click += decButton_Click;
@@ -314,31 +326,30 @@ namespace Inventory_Management.Forms
             // incQtyLabel
             // 
             incQtyLabel.AutoSize = true;
-            incQtyLabel.Location = new Point(398, 357);
+            incQtyLabel.Location = new Point(205, 49);
             incQtyLabel.Name = "incQtyLabel";
-            incQtyLabel.Size = new Size(65, 20);
-            incQtyLabel.TabIndex = 24;
-            incQtyLabel.Text = "Amount:";
+            incQtyLabel.Size = new Size(35, 20);
+            incQtyLabel.TabIndex = 2;
+            incQtyLabel.Text = "Qty:";
             // 
             // incQtyTextBox
             // 
-            incQtyTextBox.Location = new Point(468, 354);
+            incQtyTextBox.Location = new Point(245, 46);
             incQtyTextBox.Name = "incQtyTextBox";
             incQtyTextBox.PlaceholderText = "1";
-            incQtyTextBox.Size = new Size(60, 27);
-            incQtyTextBox.TabIndex = 25;
+            incQtyTextBox.Size = new Size(50, 27);
+            incQtyTextBox.TabIndex = 3;
             incQtyTextBox.Text = "1";
             // 
-            // AddStockForm
+            // ManageInventoryForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(859, 591);
-            Controls.Add(incQtyTextBox);
-            Controls.Add(incQtyLabel);
-            Controls.Add(decButton);
-            Controls.Add(incButton);
+            ClientSize = new Size(949, 590);
+            Controls.Add(stockAdjustGroupBox);
             Controls.Add(addItemGroupBox);
+            Controls.Add(pageInfoLabel);
+            Controls.Add(itemCountLabel);
             Controls.Add(stockMaxUpDown);
             Controls.Add(stockMinUpDown);
             Controls.Add(stockLabel);
@@ -350,9 +361,9 @@ namespace Inventory_Management.Forms
             Controls.Add(buttonBackward);
             Controls.Add(buttonForward);
             Controls.Add(dataGridViewInventory);
-            Name = "AddStockForm";
-            Text = "Add Stock";
-            Load += Form4_Load;
+            Name = "ManageInventoryForm";
+            Text = "Manage Inventory";
+            Load += ManageInventoryForm_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridViewInventory).EndInit();
             ((System.ComponentModel.ISupportInitialize)priceMinUpDown).EndInit();
             ((System.ComponentModel.ISupportInitialize)priceMaxUpDown).EndInit();
@@ -360,11 +371,14 @@ namespace Inventory_Management.Forms
             ((System.ComponentModel.ISupportInitialize)stockMaxUpDown).EndInit();
             addItemGroupBox.ResumeLayout(false);
             addItemGroupBox.PerformLayout();
+            stockAdjustGroupBox.ResumeLayout(false);
+            stockAdjustGroupBox.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
+
         private DataGridView dataGridViewInventory;
         private Button buttonForward;
         private Button buttonBackward;
@@ -376,6 +390,8 @@ namespace Inventory_Management.Forms
         private Label priceLabel;
         private Label stockLabel;
         private Button clearFiltersButton;
+        private Label itemCountLabel;
+        private Label pageInfoLabel;
         private GroupBox addItemGroupBox;
         private Label nameLabel;
         private TextBox nameTextBox;
@@ -385,14 +401,12 @@ namespace Inventory_Management.Forms
         private TextBox priceTextBox;
         private Label qtyLabel;
         private TextBox qtyTextBox;
-        private Label barcodeLabel;
-        private TextBox barcodeTextBox;
         private Button addButton;
+        private GroupBox stockAdjustGroupBox;
         private Button incButton;
         private Button decButton;
         private Label incQtyLabel;
         private TextBox incQtyTextBox;
     }
 }
-
 

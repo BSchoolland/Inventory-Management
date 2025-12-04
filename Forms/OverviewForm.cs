@@ -6,9 +6,8 @@ namespace Inventory_Management.Forms
 {
     public partial class OverviewForm : Form
     {
-        private InventoryViewForm? inventoryViewForm;
+        private ManageInventoryForm? manageInventoryForm;
         private ManageItemsForm? manageItemsForm;
-        private AddStockForm? addStockForm;
         private NavigationControl nav;
 
         public OverviewForm()
@@ -22,11 +21,8 @@ namespace Inventory_Management.Forms
             
 
             nav.OverviewClicked += (s, e) => button1_Click(this, e);
-            nav.ViewInventoryClicked += (s, e) => button2_Click(this, e);
+            nav.ManageInventoryClicked += (s, e) => button2_Click(this, e);
             nav.ManageItemsClicked += (s, e) => button4_Click(this, e);
-            nav.AddStockClicked += (s, e) => { EnsureAddStockForm().Show(); this.Hide(); };
-            nav.ProjectionsClicked += (s, e) => SystemSounds.Beep.Play();
-            nav.CheckoutClicked += (s, e) => SystemSounds.Beep.Play();
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -47,8 +43,8 @@ namespace Inventory_Management.Forms
 
         private void button2_Click(object sender, EventArgs e)
         {
-            // Show InventoryViewForm and hide OverviewForm
-            EnsureInventoryViewForm().Show();
+            // Show ManageInventoryForm and hide OverviewForm
+            EnsureManageInventoryForm().Show();
             this.Hide();
         }
 
@@ -73,7 +69,7 @@ namespace Inventory_Management.Forms
             {
                 try
                 {
-                    EnsureInventoryViewForm().InitializeInventory();
+                    EnsureManageInventoryForm().InitializeInventory();
                 }
                 catch
                 {
@@ -84,15 +80,15 @@ namespace Inventory_Management.Forms
         }
 
         /// <summary>
-        /// Lazily initializes and returns the InventoryViewForm.
+        /// Lazily initializes and returns the ManageInventoryForm.
         /// </summary>
-        private InventoryViewForm EnsureInventoryViewForm()
+        private ManageInventoryForm EnsureManageInventoryForm()
         {
-            if (inventoryViewForm == null)
+            if (manageInventoryForm == null)
             {
-                inventoryViewForm = new InventoryViewForm(this);
+                manageInventoryForm = new ManageInventoryForm(this);
             }
-            return inventoryViewForm;
+            return manageInventoryForm;
         }
 
         /// <summary>
@@ -102,21 +98,9 @@ namespace Inventory_Management.Forms
         {
             if (manageItemsForm == null)
             {
-                manageItemsForm = new ManageItemsForm(this, EnsureInventoryViewForm());
+                manageItemsForm = new ManageItemsForm(this, EnsureManageInventoryForm());
             }
             return manageItemsForm;
-        }
-
-        /// <summary>
-        /// Lazily initializes and returns the AddStockForm.
-        /// </summary>
-        private AddStockForm EnsureAddStockForm()
-        {
-            if (addStockForm == null)
-            {
-                addStockForm = new AddStockForm(this, EnsureInventoryViewForm(), EnsureManageItemsForm());
-            }
-            return addStockForm;
         }
 
         /// <summary>
@@ -159,4 +143,3 @@ namespace Inventory_Management.Forms
         }
     }
 }
-
