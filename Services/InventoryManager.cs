@@ -392,6 +392,36 @@ namespace Inventory_Management.Services
         }
 
         /// <summary>
+        /// Deletes an item from the database.
+        /// </summary>
+        public bool TryDeleteItem(int rowIndex, out string errorMsg)
+        {
+            errorMsg = string.Empty;
+
+            if (rowIndex < 0 || rowIndex >= _currentPageInventory.Count)
+            {
+                errorMsg = "Invalid row selection.";
+                return false;
+            }
+
+            var item = _currentPageInventory[rowIndex];
+
+            try
+            {
+                InventoryStorageSqlite.DeleteItem(item.Id);
+                _totalItems--;
+                // Reload current page after deletion
+                LoadPageInternal(_currentPage);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                errorMsg = $"Failed to delete item: {ex.Message}";
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Refreshes the current page from the database.
         /// </summary>
         public void Refresh()

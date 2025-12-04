@@ -21,7 +21,6 @@ namespace Inventory_Management.Forms
         }
 
         #region Windows Form Designer generated code
-
         private void InitializeComponent()
         {
             groupBox = new GroupBox();

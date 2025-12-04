@@ -56,6 +56,7 @@ namespace Inventory_Management.Forms
             decButton = new Button();
             incQtyLabel = new Label();
             incQtyTextBox = new TextBox();
+            deleteButton = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridViewInventory).BeginInit();
             ((System.ComponentModel.ISupportInitialize)priceMinUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)priceMaxUpDown).BeginInit();
@@ -328,6 +329,7 @@ namespace Inventory_Management.Forms
             // 
             // stockAdjustGroupBox
             // 
+            stockAdjustGroupBox.Controls.Add(deleteButton);
             stockAdjustGroupBox.Controls.Add(incButton);
             stockAdjustGroupBox.Controls.Add(decButton);
             stockAdjustGroupBox.Controls.Add(incQtyLabel);
@@ -386,6 +388,19 @@ namespace Inventory_Management.Forms
             incQtyTextBox.Size = new Size(50, 27);
             incQtyTextBox.TabIndex = 3;
             incQtyTextBox.Text = "1";
+            // 
+            // deleteButton
+            // 
+            deleteButton.BackColor = Color.FromArgb(192, 0, 0);
+            deleteButton.FlatStyle = FlatStyle.Flat;
+            deleteButton.ForeColor = Color.White;
+            deleteButton.Location = new Point(202, 45);
+            deleteButton.Name = "deleteButton";
+            deleteButton.Size = new Size(70, 29);
+            deleteButton.TabIndex = 4;
+            deleteButton.Text = "Delete";
+            deleteButton.UseVisualStyleBackColor = false;
+            deleteButton.Click += deleteButton_Click;
             // 
             // ManageInventoryForm
             // 
@@ -455,6 +470,7 @@ namespace Inventory_Management.Forms
         private Button decButton;
         private Label incQtyLabel;
         private TextBox incQtyTextBox;
+        private Button deleteButton;
     }
 }
 

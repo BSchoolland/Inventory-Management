@@ -191,6 +191,27 @@ namespace Inventory_Management.Services
         }
 
         /// <summary>
+        /// Deletes an item from the database by ID.
+        /// </summary>
+        public static void DeleteItem(int id)
+        {
+            try
+            {
+                var context = GetContext();
+                var item = context.Items.Find(id);
+                if (item != null)
+                {
+                    context.Items.Remove(item);
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to delete item from database: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
         /// Gets the total count of items in the database.
         /// </summary>
         public static int GetTotalItemCount()

@@ -394,6 +394,46 @@ namespace Inventory_Management.Forms
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        /// <summary>
+        /// Deletes the selected item from inventory with confirmation.
+        /// </summary>
+        private void deleteButton_Click(object sender, EventArgs e)
+        {
+            if (dataGridViewInventory.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select an item to delete.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int rowIndex = dataGridViewInventory.SelectedRows[0].Index;
+            var selectedItem = (dynamic)dataGridViewInventory.Rows[rowIndex].DataBoundItem;
+            string itemName = selectedItem?.Name ?? "Unknown";
+
+            // Ask for confirmation
+            DialogResult result = MessageBox.Show(
+                $"Are you sure you want to delete '{itemName}'? This action cannot be undone.",
+                "Confirm Delete",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning
+            );
+
+            if (result == DialogResult.Yes)
+            {
+                if (inventoryManager.TryDeleteItem(rowIndex, out var errorMsg))
+                {
+                    MessageBox.Show($"Item '{itemName}' deleted successfully.", "Success",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    RefreshFromStorage();
+                }
+                else
+                {
+                    MessageBox.Show($"Failed to delete item: {errorMsg}", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
     }
 }
 

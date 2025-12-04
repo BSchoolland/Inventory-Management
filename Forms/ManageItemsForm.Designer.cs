@@ -31,16 +31,16 @@ namespace Inventory_Management.Forms
             label1 = new Label();
             uploadButton = new Button();
             label2 = new Label();
-            deleteLabel = new Label();
-            deleteNameTextBox = new TextBox();
-            deleteButton = new Button();
             label3 = new Label();
-            deleteSuggestionsListBox = new ListBox();
             addManualButton = new Button();
             qtyTextBox = new TextBox();
             priceTextBox = new TextBox();
             nameTextBox = new TextBox();
             addLabel = new Label();
+            deleteLabel = new Label();
+            deleteNameTextBox = new TextBox();
+            deleteButton = new Button();
+            deleteSuggestionsListBox = new ListBox();
             SuspendLayout();
             // 
             // label1
@@ -75,39 +75,6 @@ namespace Inventory_Management.Forms
             label2.Text = "Item uploads:";
             label2.Click += label2_Click_1;
             // 
-            // deleteLabel
-            // 
-            deleteLabel.AutoSize = true;
-            deleteLabel.Location = new Point(935, 149);
-            deleteLabel.Name = "deleteLabel";
-            deleteLabel.Size = new Size(117, 20);
-            deleteLabel.TabIndex = 7;
-            deleteLabel.Text = "Delete by name:";
-            // 
-            // deleteNameTextBox
-            // 
-            deleteNameTextBox.BackColor = Color.FromArgb(50, 50, 50);
-            deleteNameTextBox.BorderStyle = BorderStyle.FixedSingle;
-            deleteNameTextBox.ForeColor = Color.White;
-            deleteNameTextBox.Location = new Point(935, 172);
-            deleteNameTextBox.Name = "deleteNameTextBox";
-            deleteNameTextBox.Size = new Size(200, 27);
-            deleteNameTextBox.TabIndex = 8;
-            deleteNameTextBox.TextChanged += deleteNameTextBox_TextChanged;
-            // 
-            // deleteButton
-            // 
-            deleteButton.BackColor = Color.FromArgb(50, 50, 50);
-            deleteButton.FlatStyle = FlatStyle.Flat;
-            deleteButton.ForeColor = Color.White;
-            deleteButton.Location = new Point(1141, 171);
-            deleteButton.Name = "deleteButton";
-            deleteButton.Size = new Size(94, 29);
-            deleteButton.TabIndex = 9;
-            deleteButton.Text = "Delete";
-            deleteButton.UseVisualStyleBackColor = false;
-            deleteButton.Click += deleteButton_Click;
-            // 
             // label3
             // 
             label3.AutoSize = true;
@@ -116,18 +83,6 @@ namespace Inventory_Management.Forms
             label3.Size = new Size(100, 20);
             label3.TabIndex = 15;
             label3.Text = "Item Deletion";
-            // 
-            // deleteSuggestionsListBox
-            // 
-            deleteSuggestionsListBox.BackColor = Color.FromArgb(50, 50, 50);
-            deleteSuggestionsListBox.BorderStyle = BorderStyle.FixedSingle;
-            deleteSuggestionsListBox.ForeColor = Color.White;
-            deleteSuggestionsListBox.Location = new Point(935, 202);
-            deleteSuggestionsListBox.Name = "deleteSuggestionsListBox";
-            deleteSuggestionsListBox.Size = new Size(300, 84);
-            deleteSuggestionsListBox.TabIndex = 16;
-            deleteSuggestionsListBox.Visible = false;
-            deleteSuggestionsListBox.Click += deleteSuggestionsListBox_Click;
             // 
             // addManualButton
             // 
@@ -184,12 +139,57 @@ namespace Inventory_Management.Forms
             addLabel.TabIndex = 10;
             addLabel.Text = "Or add item manually:";
             // 
+            // deleteLabel
+            // 
+            deleteLabel.AutoSize = true;
+            deleteLabel.Location = new Point(935, 149);
+            deleteLabel.Name = "deleteLabel";
+            deleteLabel.Size = new Size(117, 20);
+            deleteLabel.TabIndex = 7;
+            deleteLabel.Text = "Delete by name:";
+            // 
+            // deleteNameTextBox
+            // 
+            deleteNameTextBox.BackColor = Color.FromArgb(50, 50, 50);
+            deleteNameTextBox.BorderStyle = BorderStyle.FixedSingle;
+            deleteNameTextBox.ForeColor = Color.White;
+            deleteNameTextBox.Location = new Point(935, 172);
+            deleteNameTextBox.Name = "deleteNameTextBox";
+            deleteNameTextBox.Size = new Size(200, 27);
+            deleteNameTextBox.TabIndex = 8;
+            deleteNameTextBox.TextChanged += deleteNameTextBox_TextChanged;
+            // 
+            // deleteButton
+            // 
+            deleteButton.BackColor = Color.FromArgb(50, 50, 50);
+            deleteButton.FlatStyle = FlatStyle.Flat;
+            deleteButton.ForeColor = Color.White;
+            deleteButton.Location = new Point(1141, 171);
+            deleteButton.Name = "deleteButton";
+            deleteButton.Size = new Size(94, 29);
+            deleteButton.TabIndex = 9;
+            deleteButton.Text = "Delete";
+            deleteButton.UseVisualStyleBackColor = false;
+            deleteButton.Click += deleteButton_Click;
+            // 
+            // deleteSuggestionsListBox
+            // 
+            deleteSuggestionsListBox.BackColor = Color.FromArgb(50, 50, 50);
+            deleteSuggestionsListBox.BorderStyle = BorderStyle.FixedSingle;
+            deleteSuggestionsListBox.ForeColor = Color.White;
+            deleteSuggestionsListBox.Location = new Point(935, 202);
+            deleteSuggestionsListBox.Name = "deleteSuggestionsListBox";
+            deleteSuggestionsListBox.Size = new Size(300, 82);
+            deleteSuggestionsListBox.TabIndex = 16;
+            deleteSuggestionsListBox.Visible = false;
+            deleteSuggestionsListBox.Click += deleteSuggestionsListBox_Click;
+            // 
             // ManageItemsForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(34, 34, 34);
-            ClientSize = new Size(768, 450);
+            ClientSize = new Size(681, 450);
             Controls.Add(deleteSuggestionsListBox);
             Controls.Add(label3);
             Controls.Add(addManualButton);
@@ -215,16 +215,16 @@ namespace Inventory_Management.Forms
         private Label label1;
         private Button uploadButton;
         private Label label2;
-        private Label deleteLabel;
-        private TextBox deleteNameTextBox;
-        private Button deleteButton;
         private Label label3;
-        private ListBox deleteSuggestionsListBox;
         private Button addManualButton;
         private TextBox qtyTextBox;
         private TextBox priceTextBox;
         private TextBox nameTextBox;
         private Label addLabel;
+        private Label deleteLabel;
+        private TextBox deleteNameTextBox;
+        private Button deleteButton;
+        private ListBox deleteSuggestionsListBox;
     }
 }
 
