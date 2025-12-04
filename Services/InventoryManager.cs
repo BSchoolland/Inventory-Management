@@ -15,6 +15,10 @@ namespace Inventory_Management.Services
         private int _pageSize = 100;
         private int _totalItems = 0;
         private string _currentSearchTerm = string.Empty;
+        private decimal? _currentFilterMinPrice;
+        private decimal? _currentFilterMaxPrice;
+        private int? _currentFilterMinStock;
+        private int? _currentFilterMaxStock;
         private bool _isInitialized = false;
 
         public event PropertyChangedEventHandler? PropertyChanged { add { } remove { } }
@@ -113,14 +117,65 @@ namespace Inventory_Management.Services
         {
             try
             {
-                _currentSearchTerm = string.Empty;
-                _currentPage = 1;
-                _currentPageInventory = InventoryStorageSqlite.FilterItems(minPrice, maxPrice, minStock, maxStock, _currentPage, _pageSize, out _totalItems);
+                // Store filter values for page navigation
+                _currentFilterMinPrice = minPrice;
+                _currentFilterMaxPrice = maxPrice;
+                _currentFilterMinStock = minStock;
+                _currentFilterMaxStock = maxStock;
+                
+                // If there's an active search, combine search with filters
+                if (!string.IsNullOrWhiteSpace(_currentSearchTerm))
+                {
+                    _currentPage = 1;
+                    _currentPageInventory = InventoryStorageSqlite.SearchAndFilterItems(
+                        _currentSearchTerm, minPrice, maxPrice, minStock, maxStock, 
+                        _currentPage, _pageSize, out _totalItems);
+                }
+                else
+                {
+                    _currentSearchTerm = string.Empty;
+                    _currentPage = 1;
+                    _currentPageInventory = InventoryStorageSqlite.FilterItems(minPrice, maxPrice, minStock, maxStock, _currentPage, _pageSize, out _totalItems);
+                }
+                
                 RefreshBindingSource();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Filter failed: {ex.Message}", "Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Searches items by name. If filters are active, combines them with AND logic.
+        /// </summary>
+        public void SearchItemsWithActiveFilters(string searchTerm)
+        {
+            try
+            {
+                _currentSearchTerm = searchTerm;
+                _currentPage = 1;
+                
+                // If there are active filters, combine search with filters
+                if (_currentFilterMinPrice.HasValue || _currentFilterMaxPrice.HasValue || 
+                    _currentFilterMinStock.HasValue || _currentFilterMaxStock.HasValue)
+                {
+                    _currentPageInventory = InventoryStorageSqlite.SearchAndFilterItems(
+                        searchTerm, _currentFilterMinPrice, _currentFilterMaxPrice, 
+                        _currentFilterMinStock, _currentFilterMaxStock, 
+                        _currentPage, _pageSize, out _totalItems);
+                }
+                else
+                {
+                    _currentPageInventory = InventoryStorageSqlite.SearchItems(searchTerm, _currentPage, _pageSize, out _totalItems);
+                }
+                
+                RefreshBindingSource();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Search failed: {ex.Message}", "Error", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -167,13 +222,35 @@ namespace Inventory_Management.Services
             {
                 _currentPage = pageNumber;
                 
-                if (string.IsNullOrWhiteSpace(_currentSearchTerm))
+                // Check if there are active filters
+                bool hasFilters = _currentFilterMinPrice.HasValue || _currentFilterMaxPrice.HasValue || 
+                                 _currentFilterMinStock.HasValue || _currentFilterMaxStock.HasValue;
+                
+                if (string.IsNullOrWhiteSpace(_currentSearchTerm) && !hasFilters)
                 {
+                    // No search and no filters - load all items for this page
                     _currentPageInventory = InventoryStorageSqlite.LoadItemsPaged(_currentPage, _pageSize);
+                }
+                else if (!string.IsNullOrWhiteSpace(_currentSearchTerm) && hasFilters)
+                {
+                    // Both search and filters active - combine them
+                    _currentPageInventory = InventoryStorageSqlite.SearchAndFilterItems(
+                        _currentSearchTerm, _currentFilterMinPrice, _currentFilterMaxPrice, 
+                        _currentFilterMinStock, _currentFilterMaxStock, 
+                        _currentPage, _pageSize, out _totalItems);
+                }
+                else if (!string.IsNullOrWhiteSpace(_currentSearchTerm))
+                {
+                    // Only search active
+                    _currentPageInventory = InventoryStorageSqlite.SearchItems(_currentSearchTerm, _currentPage, _pageSize, out _totalItems);
                 }
                 else
                 {
-                    _currentPageInventory = InventoryStorageSqlite.SearchItems(_currentSearchTerm, _currentPage, _pageSize, out _totalItems);
+                    // Only filters active
+                    _currentPageInventory = InventoryStorageSqlite.FilterItems(
+                        _currentFilterMinPrice, _currentFilterMaxPrice, 
+                        _currentFilterMinStock, _currentFilterMaxStock, 
+                        _currentPage, _pageSize, out _totalItems);
                 }
                 
                 RefreshBindingSource();

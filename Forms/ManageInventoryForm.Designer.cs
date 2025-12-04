@@ -74,12 +74,12 @@ namespace Inventory_Management.Forms
             dataGridViewInventory.ReadOnly = true;
             dataGridViewInventory.RowHeadersWidth = 51;
             dataGridViewInventory.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridViewInventory.Size = new Size(779, 300);
+            dataGridViewInventory.Size = new Size(874, 300);
             dataGridViewInventory.TabIndex = 10;
             // 
             // buttonForward
             // 
-            buttonForward.Location = new Point(900, 346);
+            buttonForward.Location = new Point(997, 351);
             buttonForward.Name = "buttonForward";
             buttonForward.Size = new Size(40, 30);
             buttonForward.TabIndex = 11;
@@ -89,7 +89,7 @@ namespace Inventory_Management.Forms
             // 
             // buttonBackward
             // 
-            buttonBackward.Location = new Point(850, 346);
+            buttonBackward.Location = new Point(947, 351);
             buttonBackward.Name = "buttonBackward";
             buttonBackward.Size = new Size(40, 30);
             buttonBackward.TabIndex = 12;
@@ -188,7 +188,7 @@ namespace Inventory_Management.Forms
             // pageInfoLabel
             // 
             pageInfoLabel.AutoSize = true;
-            pageInfoLabel.Location = new Point(719, 351);
+            pageInfoLabel.Location = new Point(816, 356);
             pageInfoLabel.Name = "pageInfoLabel";
             pageInfoLabel.Size = new Size(83, 20);
             pageInfoLabel.TabIndex = 22;
@@ -207,7 +207,7 @@ namespace Inventory_Management.Forms
             addItemGroupBox.Controls.Add(addButton);
             addItemGroupBox.Location = new Point(160, 390);
             addItemGroupBox.Name = "addItemGroupBox";
-            addItemGroupBox.Size = new Size(450, 150);
+            addItemGroupBox.Size = new Size(499, 150);
             addItemGroupBox.TabIndex = 23;
             addItemGroupBox.TabStop = false;
             addItemGroupBox.Text = "Add New Item";
@@ -296,9 +296,9 @@ namespace Inventory_Management.Forms
             stockAdjustGroupBox.Controls.Add(decButton);
             stockAdjustGroupBox.Controls.Add(incQtyLabel);
             stockAdjustGroupBox.Controls.Add(incQtyTextBox);
-            stockAdjustGroupBox.Location = new Point(630, 390);
+            stockAdjustGroupBox.Location = new Point(665, 390);
             stockAdjustGroupBox.Name = "stockAdjustGroupBox";
-            stockAdjustGroupBox.Size = new Size(310, 90);
+            stockAdjustGroupBox.Size = new Size(372, 90);
             stockAdjustGroupBox.TabIndex = 24;
             stockAdjustGroupBox.TabStop = false;
             stockAdjustGroupBox.Text = "Adjust Stock (select item above)";
@@ -326,7 +326,7 @@ namespace Inventory_Management.Forms
             // incQtyLabel
             // 
             incQtyLabel.AutoSize = true;
-            incQtyLabel.Location = new Point(205, 49);
+            incQtyLabel.Location = new Point(276, 49);
             incQtyLabel.Name = "incQtyLabel";
             incQtyLabel.Size = new Size(35, 20);
             incQtyLabel.TabIndex = 2;
@@ -334,7 +334,7 @@ namespace Inventory_Management.Forms
             // 
             // incQtyTextBox
             // 
-            incQtyTextBox.Location = new Point(245, 46);
+            incQtyTextBox.Location = new Point(316, 46);
             incQtyTextBox.Name = "incQtyTextBox";
             incQtyTextBox.PlaceholderText = "1";
             incQtyTextBox.Size = new Size(50, 27);
@@ -345,7 +345,7 @@ namespace Inventory_Management.Forms
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(949, 590);
+            ClientSize = new Size(1047, 590);
             Controls.Add(stockAdjustGroupBox);
             Controls.Add(addItemGroupBox);
             Controls.Add(pageInfoLabel);

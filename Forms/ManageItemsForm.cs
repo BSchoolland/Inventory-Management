@@ -69,33 +69,33 @@ namespace Inventory_Management.Forms
                     return;
                 }
 
-                // Load all existing items ONCE instead of searching per item
-                var existingItems = InventoryStorageSqlite.LoadItems();
-                var existingDict = existingItems.ToDictionary(
-                    i => i.Name.ToLower(), 
-                    i => i, 
-                    StringComparer.OrdinalIgnoreCase
-                );
-
-                int added = 0, updated = 0, skipped = 0, errors = 0;
-                var bulkChoice = UpdateDecision.AskEach;
-                var itemsToAdd = new List<InventoryItem>();
-                var itemsToUpdate = new List<InventoryItem>();
+                // Parse file first to extract names
+                var parsedItems = new List<(string Name, decimal Price, int Qty)>();
+                int errors = 0;
                 
                 foreach (var raw in lines)
                 {
                     if (string.IsNullOrWhiteSpace(raw)) { continue; }
                     var parts = raw.Split(',');
-                    if (parts.Length != 3)
-                    {
-                        errors++;
-                        continue;
-                    }
+                    if (parts.Length != 3) { errors++; continue; }
                     string name = parts[0].Trim();
                     if (string.IsNullOrWhiteSpace(name)) { errors++; continue; }
                     if (!decimal.TryParse(parts[1].Trim(), out var price)) { errors++; continue; }
                     if (!int.TryParse(parts[2].Trim(), out var qty)) { errors++; continue; }
+                    parsedItems.Add((name, price, qty));
+                }
 
+                // Query only the items that exist by name (not all 500k items!)
+                var namesToCheck = parsedItems.Select(p => p.Name).ToList();
+                var existingDict = InventoryStorageSqlite.FindItemsByNames(namesToCheck);
+
+                int added = 0, updated = 0, skipped = 0;
+                var bulkChoice = UpdateDecision.AskEach;
+                var itemsToAdd = new List<InventoryItem>();
+                var itemsToUpdate = new List<InventoryItem>();
+                
+                foreach (var (name, price, qty) in parsedItems)
+                {
                     // Check in dictionary instead of querying database
                     if (existingDict.TryGetValue(name, out var existing))
                     {
@@ -167,7 +167,6 @@ namespace Inventory_Management.Forms
         {
             try
             {
-                var items = InventoryStorageSqlite.LoadItems();
                 var name = deleteNameTextBox.Text.Trim();
                 if (string.IsNullOrWhiteSpace(name))
                 {
@@ -175,15 +174,12 @@ namespace Inventory_Management.Forms
                     return;
                 }
 
-                var toRemove = items.Where(i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase)).ToList();
-                foreach (var item in toRemove)
-                {
-                    InventoryStorageSqlite.DeleteItem(item);
-                }
+                // Use targeted delete instead of loading all 500k items
+                int deletedCount = InventoryStorageSqlite.DeleteItemByName(name);
 
-                if (toRemove.Count > 0)
+                if (deletedCount > 0)
                 {
-                    MessageBox.Show($"Deleted {toRemove.Count} item(s) named '{name}'.");
+                    MessageBox.Show($"Deleted {deletedCount} item(s) named '{name}'.");
                     RefreshItemNames();
                     UpdateDeleteUIState();
                 }
@@ -207,8 +203,8 @@ namespace Inventory_Management.Forms
                 if (!decimal.TryParse(priceTextBox.Text.Trim(), out var price)) { MessageBox.Show("Invalid price."); return; }
                 if (!int.TryParse(qtyTextBox.Text.Trim(), out var qty)) { MessageBox.Show("Invalid quantity."); return; }
 
-                var items = InventoryStorageSqlite.LoadItems();
-                var existing = items.FirstOrDefault(i => string.Equals(i.Name, name, StringComparison.OrdinalIgnoreCase));
+                // Use targeted query instead of loading all 500k items
+                var existing = InventoryStorageSqlite.FindItemByName(name);
                 
                 if (existing != null)
                 {

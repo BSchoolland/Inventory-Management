@@ -34,13 +34,13 @@ namespace Inventory_Management.Forms
             deleteLabel = new Label();
             deleteNameTextBox = new TextBox();
             deleteButton = new Button();
-            addLabel = new Label();
-            nameTextBox = new TextBox();
-            priceTextBox = new TextBox();
-            qtyTextBox = new TextBox();
-            addManualButton = new Button();
             label3 = new Label();
             deleteSuggestionsListBox = new ListBox();
+            addManualButton = new Button();
+            qtyTextBox = new TextBox();
+            priceTextBox = new TextBox();
+            nameTextBox = new TextBox();
+            addLabel = new Label();
             SuspendLayout();
             // 
             // label1
@@ -54,7 +54,7 @@ namespace Inventory_Management.Forms
             // 
             // uploadButton
             // 
-            uploadButton.Location = new Point(375, 80);
+            uploadButton.Location = new Point(372, 101);
             uploadButton.Name = "uploadButton";
             uploadButton.Size = new Size(150, 30);
             uploadButton.TabIndex = 5;
@@ -65,7 +65,7 @@ namespace Inventory_Management.Forms
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(395, 56);
+            label2.Location = new Point(397, 75);
             label2.Name = "label2";
             label2.Size = new Size(99, 20);
             label2.TabIndex = 6;
@@ -75,7 +75,7 @@ namespace Inventory_Management.Forms
             // deleteLabel
             // 
             deleteLabel.AutoSize = true;
-            deleteLabel.Location = new Point(306, 239);
+            deleteLabel.Location = new Point(935, 149);
             deleteLabel.Name = "deleteLabel";
             deleteLabel.Size = new Size(117, 20);
             deleteLabel.TabIndex = 7;
@@ -83,7 +83,7 @@ namespace Inventory_Management.Forms
             // 
             // deleteNameTextBox
             // 
-            deleteNameTextBox.Location = new Point(306, 262);
+            deleteNameTextBox.Location = new Point(935, 172);
             deleteNameTextBox.Name = "deleteNameTextBox";
             deleteNameTextBox.Size = new Size(200, 27);
             deleteNameTextBox.TabIndex = 8;
@@ -91,7 +91,7 @@ namespace Inventory_Management.Forms
             // 
             // deleteButton
             // 
-            deleteButton.Location = new Point(512, 261);
+            deleteButton.Location = new Point(1141, 171);
             deleteButton.Name = "deleteButton";
             deleteButton.Size = new Size(94, 29);
             deleteButton.TabIndex = 9;
@@ -99,53 +99,10 @@ namespace Inventory_Management.Forms
             deleteButton.UseVisualStyleBackColor = true;
             deleteButton.Click += deleteButton_Click;
             // 
-            // addLabel
-            // 
-            addLabel.AutoSize = true;
-            addLabel.Location = new Point(250, 122);
-            addLabel.Name = "addLabel";
-            addLabel.Size = new Size(156, 20);
-            addLabel.TabIndex = 10;
-            addLabel.Text = "Or add item manually:";
-            // 
-            // nameTextBox
-            // 
-            nameTextBox.Location = new Point(250, 145);
-            nameTextBox.Name = "nameTextBox";
-            nameTextBox.PlaceholderText = "Name";
-            nameTextBox.Size = new Size(150, 27);
-            nameTextBox.TabIndex = 11;
-            // 
-            // priceTextBox
-            // 
-            priceTextBox.Location = new Point(406, 145);
-            priceTextBox.Name = "priceTextBox";
-            priceTextBox.PlaceholderText = "Price";
-            priceTextBox.Size = new Size(100, 27);
-            priceTextBox.TabIndex = 12;
-            // 
-            // qtyTextBox
-            // 
-            qtyTextBox.Location = new Point(512, 145);
-            qtyTextBox.Name = "qtyTextBox";
-            qtyTextBox.PlaceholderText = "Qty";
-            qtyTextBox.Size = new Size(60, 27);
-            qtyTextBox.TabIndex = 13;
-            // 
-            // addManualButton
-            // 
-            addManualButton.Location = new Point(578, 144);
-            addManualButton.Name = "addManualButton";
-            addManualButton.Size = new Size(94, 29);
-            addManualButton.TabIndex = 14;
-            addManualButton.Text = "Add";
-            addManualButton.UseVisualStyleBackColor = true;
-            addManualButton.Click += addManualButton_Click;
-            // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(395, 201);
+            label3.Location = new Point(1024, 111);
             label3.Name = "label3";
             label3.Size = new Size(100, 20);
             label3.TabIndex = 15;
@@ -153,18 +110,61 @@ namespace Inventory_Management.Forms
             // 
             // deleteSuggestionsListBox
             // 
-            deleteSuggestionsListBox.Location = new Point(306, 292);
+            deleteSuggestionsListBox.Location = new Point(935, 202);
             deleteSuggestionsListBox.Name = "deleteSuggestionsListBox";
             deleteSuggestionsListBox.Size = new Size(300, 84);
             deleteSuggestionsListBox.TabIndex = 16;
             deleteSuggestionsListBox.Visible = false;
             deleteSuggestionsListBox.Click += deleteSuggestionsListBox_Click;
             // 
+            // addManualButton
+            // 
+            addManualButton.Location = new Point(1263, 56);
+            addManualButton.Name = "addManualButton";
+            addManualButton.Size = new Size(94, 29);
+            addManualButton.TabIndex = 14;
+            addManualButton.Text = "Add";
+            addManualButton.UseVisualStyleBackColor = true;
+            addManualButton.Click += addManualButton_Click;
+            // 
+            // qtyTextBox
+            // 
+            qtyTextBox.Location = new Point(1197, 57);
+            qtyTextBox.Name = "qtyTextBox";
+            qtyTextBox.PlaceholderText = "Qty";
+            qtyTextBox.Size = new Size(60, 27);
+            qtyTextBox.TabIndex = 13;
+            // 
+            // priceTextBox
+            // 
+            priceTextBox.Location = new Point(1091, 57);
+            priceTextBox.Name = "priceTextBox";
+            priceTextBox.PlaceholderText = "Price";
+            priceTextBox.Size = new Size(100, 27);
+            priceTextBox.TabIndex = 12;
+            // 
+            // nameTextBox
+            // 
+            nameTextBox.Location = new Point(935, 57);
+            nameTextBox.Name = "nameTextBox";
+            nameTextBox.PlaceholderText = "Name";
+            nameTextBox.Size = new Size(150, 27);
+            nameTextBox.TabIndex = 11;
+            // 
+            // addLabel
+            // 
+            addLabel.AutoSize = true;
+            addLabel.Location = new Point(935, 34);
+            addLabel.Name = "addLabel";
+            addLabel.Size = new Size(156, 20);
+            addLabel.TabIndex = 10;
+            addLabel.Text = "Or add item manually:";
+            // 
             // ManageItemsForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(768, 450);
             Controls.Add(deleteSuggestionsListBox);
             Controls.Add(label3);
             Controls.Add(addManualButton);
@@ -192,13 +192,13 @@ namespace Inventory_Management.Forms
         private Label deleteLabel;
         private TextBox deleteNameTextBox;
         private Button deleteButton;
-        private Label addLabel;
-        private TextBox nameTextBox;
-        private TextBox priceTextBox;
-        private TextBox qtyTextBox;
-        private Button addManualButton;
         private Label label3;
         private ListBox deleteSuggestionsListBox;
+        private Button addManualButton;
+        private TextBox qtyTextBox;
+        private TextBox priceTextBox;
+        private TextBox nameTextBox;
+        private Label addLabel;
     }
 }
 

@@ -46,6 +46,37 @@ namespace Inventory_Management.Services
 
             // Ensure database is created with the current model
             _dbContext.Database.EnsureCreated();
+
+            // Enable WAL mode for better concurrent read/write performance
+            _dbContext.Database.ExecuteSqlRaw("PRAGMA journal_mode=WAL;");
+            
+            // Optimize SQLite for performance
+            _dbContext.Database.ExecuteSqlRaw("PRAGMA synchronous=NORMAL;");
+            _dbContext.Database.ExecuteSqlRaw("PRAGMA cache_size=-64000;"); // 64MB cache
+            _dbContext.Database.ExecuteSqlRaw("PRAGMA temp_store=MEMORY;");
+            
+            // Ensure indexes exist (in case DB was created before indexes were defined)
+            EnsureIndexes();
+        }
+
+        /// <summary>
+        /// Creates indexes if they don't already exist (for existing databases).
+        /// </summary>
+        private static void EnsureIndexes()
+        {
+            try
+            {
+                var context = GetContext();
+                // These will be no-ops if indexes already exist
+                context.Database.ExecuteSqlRaw("CREATE INDEX IF NOT EXISTS IX_Items_Name ON Items(Name COLLATE NOCASE);");
+                context.Database.ExecuteSqlRaw("CREATE INDEX IF NOT EXISTS IX_Items_CurrentPrice ON Items(CurrentPrice);");
+                context.Database.ExecuteSqlRaw("CREATE INDEX IF NOT EXISTS IX_Items_StockQuantity ON Items(StockQuantity);");
+                context.Database.ExecuteSqlRaw("CREATE INDEX IF NOT EXISTS IX_Items_Price_Stock ON Items(CurrentPrice, StockQuantity);");
+            }
+            catch
+            {
+                // Ignore errors - indexes may already exist or DB structure differs
+            }
         }
 
         /// <summary>
@@ -228,6 +259,7 @@ namespace Inventory_Management.Services
 
         /// <summary>
         /// Loads items with pagination support.
+        /// Orders by Name for user-friendly consistent ordering, with Id as tiebreaker.
         /// </summary>
         /// <param name="pageNumber">1-based page number</param>
         /// <param name="pageSize">Number of items per page</param>
@@ -243,7 +275,8 @@ namespace Inventory_Management.Services
                 int skip = (pageNumber - 1) * pageSize;
                 
                 return context.Items
-                    .OrderBy(i => i.Id)
+                    .OrderBy(i => i.Name)
+                    .ThenBy(i => i.Id)
                     .Skip(skip)
                     .Take(pageSize)
                     .ToList();
@@ -256,6 +289,8 @@ namespace Inventory_Management.Services
 
         /// <summary>
         /// Searches items by name across the entire database and returns paginated results.
+        /// Uses LIKE with NOCASE collation for index-friendly case-insensitive search.
+        /// Orders by Name for consistent, user-friendly ordering with Id as tiebreaker.
         /// </summary>
         /// <param name="searchTerm">Search term to match against item names</param>
         /// <param name="pageNumber">1-based page number</param>
@@ -271,17 +306,18 @@ namespace Inventory_Management.Services
 
                 var context = GetContext();
                 
-                // Search across entire database - using ToLower for EF Core translation
-                string searchLower = searchTerm.ToLower();
+                // Use EF.Functions.Like for index-friendly search (NOCASE collation handles case-insensitivity)
+                string searchPattern = $"%{searchTerm}%";
                 var query = context.Items
-                    .Where(i => i.Name.ToLower().Contains(searchLower));
+                    .Where(i => EF.Functions.Like(i.Name, searchPattern));
 
                 totalCount = query.Count();
                 
                 int skip = (pageNumber - 1) * pageSize;
                 
                 return query
-                    .OrderBy(i => i.Id)
+                    .OrderBy(i => i.Name)
+                    .ThenBy(i => i.Id)
                     .Skip(skip)
                     .Take(pageSize)
                     .ToList();
@@ -294,6 +330,7 @@ namespace Inventory_Management.Services
 
         /// <summary>
         /// Filters items by criteria across the entire database and returns paginated results.
+        /// Orders by Name for consistent, user-friendly ordering with Id as tiebreaker.
         /// </summary>
         /// <param name="minPrice">Minimum price filter (null for no limit)</param>
         /// <param name="maxPrice">Maximum price filter (null for no limit)</param>
@@ -331,7 +368,8 @@ namespace Inventory_Management.Services
                 int skip = (pageNumber - 1) * pageSize;
 
                 return query
-                    .OrderBy(i => i.Id)
+                    .OrderBy(i => i.Name)
+                    .ThenBy(i => i.Id)
                     .Skip(skip)
                     .Take(pageSize)
                     .ToList();
@@ -343,7 +381,71 @@ namespace Inventory_Management.Services
         }
 
         /// <summary>
+        /// Searches AND filters items by both name and criteria across the entire database.
+        /// Returns paginated results where BOTH search term AND filters apply (AND logic).
+        /// Orders by Name for consistent, user-friendly ordering with Id as tiebreaker.
+        /// </summary>
+        /// <param name="searchTerm">Search term to match against item names</param>
+        /// <param name="minPrice">Minimum price filter (null for no limit)</param>
+        /// <param name="maxPrice">Maximum price filter (null for no limit)</param>
+        /// <param name="minStock">Minimum stock quantity filter (null for no limit)</param>
+        /// <param name="maxStock">Maximum stock quantity filter (null for no limit)</param>
+        /// <param name="pageNumber">1-based page number</param>
+        /// <param name="pageSize">Number of items per page</param>
+        /// <param name="totalCount">Output: Total count of matching items</param>
+        /// <returns>List of items matching both search AND filters for the specified page</returns>
+        public static List<InventoryItem> SearchAndFilterItems(string searchTerm, decimal? minPrice, decimal? maxPrice, int? minStock, int? maxStock, int pageNumber, int pageSize, out int totalCount)
+        {
+            try
+            {
+                if (pageNumber < 1) pageNumber = 1;
+                if (pageSize < 1) pageSize = 100;
+
+                var context = GetContext();
+
+                var query = context.Items.AsQueryable();
+
+                // Apply search filter (name contains search term)
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    string searchPattern = $"%{searchTerm}%";
+                    query = query.Where(i => EF.Functions.Like(i.Name, searchPattern));
+                }
+
+                // Apply price filters
+                if (minPrice.HasValue)
+                    query = query.Where(i => i.CurrentPrice >= minPrice.Value);
+
+                if (maxPrice.HasValue)
+                    query = query.Where(i => i.CurrentPrice <= maxPrice.Value);
+
+                // Apply stock filters
+                if (minStock.HasValue)
+                    query = query.Where(i => i.StockQuantity >= minStock.Value);
+
+                if (maxStock.HasValue)
+                    query = query.Where(i => i.StockQuantity <= maxStock.Value);
+
+                totalCount = query.Count();
+
+                int skip = (pageNumber - 1) * pageSize;
+
+                return query
+                    .OrderBy(i => i.Name)
+                    .ThenBy(i => i.Id)
+                    .Skip(skip)
+                    .Take(pageSize)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to search and filter items: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
         /// Gets all items by name for suggestions/autocomplete (searches entire database).
+        /// Uses LIKE for index-friendly search.
         /// </summary>
         /// <param name="searchTerm">Search term to match</param>
         /// <returns>List of matching item names</returns>
@@ -353,9 +455,9 @@ namespace Inventory_Management.Services
             {
                 var context = GetContext();
                 
-                string searchLower = searchTerm.ToLower();
+                string searchPattern = $"%{searchTerm}%";
                 return context.Items
-                    .Where(i => i.Name.ToLower().Contains(searchLower))
+                    .Where(i => EF.Functions.Like(i.Name, searchPattern))
                     .Select(i => i.Name)
                     .Distinct()
                     .OrderBy(n => n)
@@ -365,6 +467,80 @@ namespace Inventory_Management.Services
             catch (Exception ex)
             {
                 throw new Exception($"Failed to get item names: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Finds a single item by exact name match (case-insensitive).
+        /// Much faster than loading all items when you need to check for duplicates.
+        /// </summary>
+        /// <param name="name">Item name to find</param>
+        /// <returns>The item if found, null otherwise</returns>
+        public static InventoryItem? FindItemByName(string name)
+        {
+            try
+            {
+                var context = GetContext();
+                // NOCASE collation on Name column handles case-insensitivity
+                return context.Items.FirstOrDefault(i => i.Name == name);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to find item by name: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Finds multiple items by exact name match (case-insensitive).
+        /// Returns a dictionary for O(1) lookups during bulk operations.
+        /// </summary>
+        /// <param name="names">Item names to find</param>
+        /// <returns>Dictionary mapping lowercase names to items</returns>
+        public static Dictionary<string, InventoryItem> FindItemsByNames(IEnumerable<string> names)
+        {
+            try
+            {
+                var context = GetContext();
+                var nameList = names.ToList();
+                
+                // Query for items matching any of the names
+                var items = context.Items
+                    .Where(i => nameList.Contains(i.Name))
+                    .ToList();
+
+                // Build dictionary with lowercase keys for case-insensitive lookup
+                return items.ToDictionary(i => i.Name.ToLower(), i => i, StringComparer.OrdinalIgnoreCase);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to find items by names: {ex.Message}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Deletes an item by exact name match (case-insensitive).
+        /// Returns the number of items deleted.
+        /// </summary>
+        /// <param name="name">Item name to delete</param>
+        /// <returns>Number of items deleted</returns>
+        public static int DeleteItemByName(string name)
+        {
+            try
+            {
+                var context = GetContext();
+                var itemsToDelete = context.Items.Where(i => i.Name == name).ToList();
+                
+                if (itemsToDelete.Count > 0)
+                {
+                    context.Items.RemoveRange(itemsToDelete);
+                    context.SaveChanges();
+                }
+                
+                return itemsToDelete.Count;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to delete item by name: {ex.Message}", ex);
             }
         }
 

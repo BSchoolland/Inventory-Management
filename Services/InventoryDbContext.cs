@@ -24,9 +24,11 @@ namespace Inventory_Management.Services
             {
                 entity.HasKey(e => e.Id);
 
+                // Use case-insensitive collation for Name to enable indexed searches
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(256);
+                    .HasMaxLength(256)
+                    .UseCollation("NOCASE");
 
                 entity.Property(e => e.Description)
                     .HasMaxLength(1024);
@@ -36,6 +38,22 @@ namespace Inventory_Management.Services
 
                 entity.Property(e => e.Barcode)
                     .HasMaxLength(128);
+
+                // Index on Name for fast text searches (NOCASE collation enables case-insensitive index scans)
+                entity.HasIndex(e => e.Name)
+                    .HasDatabaseName("IX_Items_Name");
+
+                // Index on CurrentPrice for price filtering
+                entity.HasIndex(e => e.CurrentPrice)
+                    .HasDatabaseName("IX_Items_CurrentPrice");
+
+                // Index on StockQuantity for stock filtering
+                entity.HasIndex(e => e.StockQuantity)
+                    .HasDatabaseName("IX_Items_StockQuantity");
+
+                // Composite index for common filter combinations (price + stock)
+                entity.HasIndex(e => new { e.CurrentPrice, e.StockQuantity })
+                    .HasDatabaseName("IX_Items_Price_Stock");
 
                 // Create unique index on barcode, but only for non-empty values
                 entity.HasIndex(e => e.Barcode)

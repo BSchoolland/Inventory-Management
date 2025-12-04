@@ -153,11 +153,20 @@ namespace Inventory_Management.Forms
             int? stockMin = stockMinBlank ? null : (int)stockMinUpDown.Value;
             int? stockMax = stockMaxBlank ? null : (int)stockMaxUpDown.Value;
 
-            if (!string.IsNullOrWhiteSpace(search))
+            bool hasSearch = !string.IsNullOrWhiteSpace(search);
+            bool hasFilters = priceMin.HasValue || priceMax.HasValue || stockMin.HasValue || stockMax.HasValue;
+
+            if (hasSearch && hasFilters)
+            {
+                // Both search and filters - set filters first, then search (which will combine them)
+                inventoryManager.FilterItems(priceMin, priceMax, stockMin, stockMax);
+                inventoryManager.SearchItemsWithActiveFilters(search);
+            }
+            else if (hasSearch)
             {
                 inventoryManager.SearchItems(search);
             }
-            else if (priceMin.HasValue || priceMax.HasValue || stockMin.HasValue || stockMax.HasValue)
+            else if (hasFilters)
             {
                 inventoryManager.FilterItems(priceMin, priceMax, stockMin, stockMax);
             }
