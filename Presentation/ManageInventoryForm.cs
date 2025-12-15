@@ -16,10 +16,9 @@ namespace Inventory_Management.Forms
         {
             overviewForm = parentOverview;
             
-            // Initialize timers BEFORE InitializeComponent() to avoid null reference errors
             // Initialize search debounce timer
             searchDebounceTimer = new System.Windows.Forms.Timer();
-            searchDebounceTimer.Interval = 750; // 0.75 seconds
+            searchDebounceTimer.Interval = 500; // milliseconds
             searchDebounceTimer.Tick += (s, e) =>
             {
                 searchDebounceTimer.Stop();
@@ -28,7 +27,7 @@ namespace Inventory_Management.Forms
 
             // Initialize filter debounce timer
             filterDebounceTimer = new System.Windows.Forms.Timer();
-            filterDebounceTimer.Interval = 750; // 0.75 seconds
+            filterDebounceTimer.Interval = 500; // milliseconds
             filterDebounceTimer.Tick += (s, e) =>
             {
                 filterDebounceTimer.Stop();
